@@ -251,7 +251,6 @@
         .log-warn { color: var(--gold); }
         .log-hex { color: #00f3ff; opacity: 0.8; font-size: 9px; }
         
-        /* DÙNG DIV ĐỂ TRÁNH LỖI BÀN PHÍM CRASH WEBVIEW */
         .terminal-input-box { display: flex; border-top: 1px solid var(--border); background: rgba(0,0,0,0.5); padding: 6px 8px; align-items: center; gap: 5px;}
         .terminal-prefix { color: var(--emerald); font-weight: bold; font-size: 11px;}
         .terminal-input { 
@@ -826,7 +825,7 @@
             }, 150);
         }
 
-        // SỬA LẠI HÀM MỞ GAME ĐỂ GỬI LỆNH XUỐNG KODULAR
+        // HÀM MỞ GAME GỬI LỆNH XUỐNG KODULAR
         function launchGame() {
             playSound('click'); document.getElementById('modal-game').classList.remove('active');
             log("HỆ THỐNG: Chuẩn bị khởi chạy Free Fire VN...", "emerald");
