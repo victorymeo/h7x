@@ -39,7 +39,6 @@
             overflow-y: auto; 
             overflow-x: hidden; 
             position: relative;
-            -webkit-overflow-scrolling: touch;
         }
 
         #matrixCanvas {
@@ -48,7 +47,6 @@
         }
 
         body.ac-active { box-shadow: inset 0 0 80px rgba(0, 255, 136, 0.1); }
-        body.ch-active { box-shadow: inset 0 0 80px rgba(255, 0, 51, 0.1); }
         body.stream-mode { background-color: transparent; }
 
         .app-container {
@@ -139,7 +137,6 @@
         
         .sys-status { text-align: right; font-size: 9px; color: var(--muted); line-height: 1.5; background: rgba(0,0,0,0.4); padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); margin-right: 10px;}
         .sys-status span { color: var(--emerald); font-weight: bold; }
-        .sys-status .hidden { color: var(--purple); text-shadow: 0 0 5px var(--purple); }
 
         .btn-exit {
             background: rgba(255, 255, 255, 0.05); border: 1px solid var(--muted);
@@ -201,29 +198,17 @@
         .stream-info p { font-size: 9px; color: var(--muted); margin-top: 3px; }
         .stream-icon { font-size: 20px; color: var(--purple); filter: drop-shadow(0 0 5px var(--purple)); }
 
-        .combat-modules {
+        /* KHỐI ANTICHECK TRÀN VIỀN */
+        .anticheck-panel {
             background: rgba(0,0,0,0.6); border: 1px solid var(--border); border-radius: 10px;
-            padding: 15px; margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+            padding: 15px 20px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;
+            cursor: pointer; transition: 0.3s;
         }
-        
-        .module-box {
-            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
-            background: rgba(255,255,255,0.02); border: 1px solid var(--border);
-            padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.2s;
-            position: relative;
-        }
-        .module-box:active { transform: scale(0.95); }
-        
-        .module-box.antickeck.active { border-color: var(--emerald); background: rgba(0, 255, 136, 0.05); box-shadow: 0 0 15px var(--emerald-glow); }
-        .antickeck .mod-title { color: #fff; }
-        .antickeck.active .mod-status { color: var(--emerald); }
-        
-        .module-box.crosshair.active { border-color: var(--ruby); background: rgba(255, 0, 51, 0.05); box-shadow: 0 0 15px var(--ruby-glow); }
-        .crosshair .mod-title { color: #fff; }
-        .crosshair.active .mod-status { color: var(--ruby); }
-
-        .mod-title { font-size: 11px; font-weight: 900; letter-spacing: 0.5px; }
-        .mod-status { font-size: 9px; color: var(--muted); font-weight: bold; }
+        .anticheck-panel.active { border-color: var(--emerald); background: rgba(0, 255, 136, 0.05); box-shadow: 0 0 15px var(--emerald-glow); }
+        .ac-info { display: flex; flex-direction: column; gap: 4px; }
+        .ac-title { font-size: 13px; font-weight: 900; color: #fff; letter-spacing: 0.5px; }
+        .ac-status { font-size: 10px; color: var(--muted); font-weight: bold; }
+        .anticheck-panel.active .ac-status { color: var(--emerald); }
         
         .toggle-btn {
             width: 54px; height: 26px; background: #111; border-radius: 20px;
@@ -233,29 +218,13 @@
             content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px;
             background: #555; border-radius: 50%; transition: 0.3s;
         }
-        .antickeck.active .toggle-btn { border-color: var(--emerald); background: rgba(0,255,136,0.1); }
-        .antickeck.active .toggle-btn::after { left: 30px; background: var(--emerald); box-shadow: 0 0 10px var(--emerald); }
-        
-        .crosshair.active .toggle-btn { border-color: var(--ruby); background: rgba(255,0,51,0.1); }
-        .crosshair.active .toggle-btn::after { left: 30px; background: var(--ruby); box-shadow: 0 0 10px var(--ruby); }
+        .anticheck-panel.active .toggle-btn { border-color: var(--emerald); background: rgba(0,255,136,0.1); }
+        .anticheck-panel.active .toggle-btn::after { left: 30px; background: var(--emerald); box-shadow: 0 0 10px var(--emerald); }
 
-        .ch-options { display: none; gap: 6px; margin-top: 5px; flex-wrap: wrap; justify-content: center; align-items: center; }
-        .crosshair.active .ch-options { display: flex; }
-        
-        .color-dot { width: 12px; height: 12px; border-radius: 50%; cursor: pointer; border: 1px solid rgba(255,255,255,0.3); transition: 0.2s; }
-        .color-dot:hover { transform: scale(1.3); border-color: #fff; }
-        
-        .lock-btn, .fov-btn { 
-            width: 20px; height: 20px; border-radius: 4px; background: rgba(255,255,255,0.1); 
-            border: 1px solid var(--muted); display: flex; justify-content: center; align-items: center; 
-            font-size: 10px; cursor: pointer; transition: 0.2s;
-        }
-        .lock-btn.locked { border-color: var(--ruby); background: rgba(255,0,51,0.2); color: var(--ruby); }
-        .fov-btn.active { border-color: var(--cyan); background: rgba(0, 243, 255, 0.2); color: var(--cyan); box-shadow: 0 0 5px var(--cyan); }
-
+        /* CONSOLE */
         .console-container {
             background: #010204; border: 1px solid var(--border);
-            border-radius: 8px; height: 220px; display: flex; flex-direction: column; overflow: hidden;
+            border-radius: 8px; height: 230px; display: flex; flex-direction: column; overflow: hidden;
         }
         .console-content { display: flex; flex: 1; overflow: hidden; }
         .sens-panel {
@@ -282,13 +251,11 @@
         .log-warn { color: var(--gold); }
         .log-hex { color: #00f3ff; opacity: 0.8; font-size: 9px; }
         
-        /* THAY THẾ INPUT BẰNG DIV ĐỂ TRÁNH LỖI CRASH WEBVIEW */
-        .terminal-input-box { display: flex; border-top: 1px solid var(--border); background: rgba(0,0,0,0.5); padding: 6px 8px; align-items: center; gap: 5px; }
+        .terminal-input-box { display: flex; border-top: 1px solid var(--border); background: rgba(0,0,0,0.5); padding: 6px 8px; align-items: center; gap: 5px;}
         .terminal-prefix { color: var(--emerald); font-weight: bold; font-size: 11px;}
         .terminal-input { 
             flex: 1; background: transparent; border: none; color: var(--silver); 
-            font-family: 'Share Tech Mono'; font-size: 11px; outline: none; 
-            caret-color: var(--emerald); /* Hiển thị con trỏ nhấp nháy */
+            font-family: 'Share Tech Mono'; font-size: 11px; outline: none; caret-color: var(--emerald);
         }
 
         .status-hud {
@@ -297,26 +264,6 @@
         }
         .hud-val { color: var(--silver); font-weight: bold; }
         .hud-val.temp-high { color: var(--ruby); animation: blink 1s infinite; }
-
-        #floating-crosshair {
-            display: none; position: fixed; z-index: 99999; width: 40px; height: 40px;
-            transform: translate(-50%, -50%); pointer-events: auto; cursor: grab;
-            transition: filter 0.2s;
-        }
-        #floating-crosshair.locked { cursor: default; pointer-events: none; filter: drop-shadow(0 0 10px #fff); }
-        #floating-crosshair:active { cursor: grabbing; }
-        
-        .ch-dot { width: 4px; height: 4px; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--ruby); box-shadow: 0 0 8px var(--ruby); }
-        .ch-line-h { width: 30px; height: 2px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--ruby); box-shadow: 0 0 8px var(--ruby); }
-        .ch-line-v { width: 2px; height: 30px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--ruby); box-shadow: 0 0 8px var(--ruby); }
-        
-        .ch-fov {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 150px; height: 150px; border-radius: 50%;
-            border: 1px dashed var(--cyan); display: none;
-            box-shadow: inset 0 0 20px rgba(0, 243, 255, 0.1);
-        }
-        .ch-fov.active { display: block; }
 
         #stream-restore-btn {
             display: none; position: fixed; bottom: 20px; right: 20px;
@@ -375,13 +322,6 @@
         </div>
     </div>
 
-    <div id="floating-crosshair">
-        <div class="ch-fov" id="ch-fov"></div>
-        <div class="ch-line-h"></div>
-        <div class="ch-line-v"></div>
-        <div class="ch-dot"></div>
-    </div>
-
     <div id="stream-restore-btn" onclick="toggleStreamMode()"></div>
 
     <div class="app-container" id="main-container">
@@ -422,7 +362,7 @@
                 </div>
                 <div style="display:flex; align-items:center;">
                     <div class="sys-status">
-                        PROC: <span class="hidden" id="proc-status">HIDDEN</span><br>
+                        PROC: <span>HIDDEN</span><br>
                         LOC: <span>🇻🇳 VN</span>
                     </div>
                     <div class="btn-exit" onclick="exitApp()">⏻</div>
@@ -469,36 +409,21 @@
                 </div>
             </div>
 
+            <!-- KHỐI ANTICHECK TRÀN VIỀN CÂN ĐỐI -->
+            <div class="anticheck-panel" id="box-ac" onclick="toggleAC()">
+                <div class="ac-info">
+                    <div class="ac-title">🛡️ ANTICHECK BYPASS</div>
+                    <div class="ac-status" id="txt-ac">ĐANG TẮT</div>
+                </div>
+                <div class="toggle-btn"></div>
+            </div>
+
             <div class="stream-panel" onclick="toggleStreamMode()">
                 <div class="stream-info">
                     <h3>CHẾ ĐỘ STREAM</h3>
                     <p>Ẩn toàn bộ UI khi đang thi đấu / quay màn hình</p>
                 </div>
                 <div class="stream-icon">👁️‍🗨️</div>
-            </div>
-
-            <div class="combat-modules">
-                <div class="module-box antickeck" id="box-ac" onclick="toggleAC()">
-                    <div class="mod-title">🛡️ ANTICHECK</div>
-                    <div class="mod-status" id="txt-ac" style="color: var(--muted);">ĐANG TẮT</div>
-                    <div class="toggle-btn"></div>
-                </div>
-                <div class="module-box crosshair" id="box-ch" onclick="toggleCH()">
-                    <div class="mod-title">🎯 TÂM ẢO REAL</div>
-                    <div class="mod-status" id="txt-ch" style="color: var(--muted);">ĐANG TẮT</div>
-                    <div class="toggle-btn"></div>
-                    
-                    <div class="ch-options" onclick="event.stopPropagation()">
-                        <div class="color-dot" style="background: #ff0033;" onclick="changeCHColor('#ff0033')"></div>
-                        <div class="color-dot" style="background: #00ff88;" onclick="changeCHColor('#00ff88')"></div>
-                        <div class="color-dot" style="background: #00f3ff;" onclick="changeCHColor('#00f3ff')"></div>
-                        <div class="color-dot" style="background: #ffcc00;" onclick="changeCHColor('#ffcc00')"></div>
-                        <div class="color-dot" style="background: #b400ff;" onclick="changeCHColor('#b400ff')"></div>
-                        <div class="color-dot" style="background: #ffffff;" onclick="changeCHColor('#ffffff')"></div>
-                        <div class="lock-btn" id="ch-lock" onclick="toggleCHLock()">🔓</div>
-                        <div class="fov-btn" id="ch-fov-btn" onclick="toggleFOV()">📡</div>
-                    </div>
-                </div>
             </div>
 
             <div class="console-container">
@@ -517,10 +442,10 @@
                         <div class="console-logs" id="console">
                             <div class="log-line" style="color: var(--muted);">> Hệ thống đang chờ lệnh...</div>
                         </div>
-                        <!-- THAY THẾ INPUT BẰNG DIV CONTENTEDITABLE -->
+                        <!-- DÙNG DIV ĐỂ TRÁNH LỖI INPUT CRASH WEBVIEW -->
                         <div class="terminal-input-box">
                             <div class="terminal-prefix">root@extraly:~#</div>
-                            <div class="terminal-input" id="terminal-cmd" contenteditable="true" spellcheck="false" onkeydown="handleTerminal(event)">Gõ 'help' để xem lệnh...</div>
+                            <div class="terminal-input" id="terminal-cmd" contenteditable="true" spellcheck="false" onkeydown="handleTerminal(event)" onfocus="if(this.innerText=='Gõ \'help\' để xem lệnh...') this.innerText='';">Gõ 'help' để xem lệnh...</div>
                         </div>
                     </div>
                 </div>
@@ -624,12 +549,8 @@
         const deviceID = generateHWID();
         let licenseType = "free";
         let isACOn = false;
-        let isCHOn = false;
         let isStreamActive = false;
-        let isFOVActive = false; 
-        let isCHLocked = false; 
         const defaultFirePower = 27;
-        let currentCHColor = '#ff0033';
 
         document.getElementById('dev-id-display').innerText = deviceID;
         document.getElementById('user-id-display').innerText = deviceID;
@@ -664,12 +585,11 @@
             return `<span style="color:#5a7a8a">${addr}:</span> <span style="color:#00f3ff">${hex}</span>`;
         }
 
-        // SỬA LẠI HÀM TERMINAL ĐỂ HOẠT ĐỘNG VỚI DIV CONTENTEDITABLE
         function handleTerminal(e) {
             if(e.key === 'Enter') {
-                e.preventDefault(); // Ngăn xuống dòng
+                e.preventDefault();
                 const input = e.target;
-                const cmd = input.innerText.replace('Gõ \'help\' để xem lệnh...', '').replace('root@extraly:~#', '').trim().toLowerCase();
+                const cmd = input.innerText.trim().toLowerCase();
                 input.innerText = ''; 
                 
                 if(!cmd) return;
@@ -687,13 +607,12 @@
                             log("clear : Xóa màn hình", "silver");
                             log("status: Xem trạng thái", "silver");
                             log("inject [v1/2/3/vip]: Kích hoạt", "silver");
-                            log("fov   : Bật/tắt vòng tròn FOV", "silver");
                             break;
                         case 'clear':
                             document.getElementById('console').innerHTML = '';
                             break;
                         case 'status':
-                            log(`[STATUS] AC: ${isACOn ? 'ON' : 'OFF'} | CH: ${isCHOn ? 'ON' : 'OFF'}`, "emerald");
+                            log(`[STATUS] AC: ${isACOn ? 'ON' : 'OFF'}`, "emerald");
                             break;
                         case 'inject':
                             if(param === 'v1') inject('V1');
@@ -702,117 +621,11 @@
                             else if(param === 'vip') inject('SUPREME VIP');
                             else log("[LỖI] Cú pháp: inject v1/v2/v3/vip", "red");
                             break;
-                        case 'fov':
-                            toggleFOV();
-                            break;
                         default:
                             log(`Lệnh không tồn tại: ${command}`, "red");
                     }
                 }, 300);
             }
-        }
-
-        function toggleFOV() {
-            isFOVActive = !isFOVActive;
-            const btn = document.getElementById('ch-fov-btn');
-            const fov = document.getElementById('ch-fov');
-            
-            if(isFOVActive) {
-                btn.classList.add('active');
-                fov.classList.add('active');
-                log("[CROSSHAIR] Đã bật vòng tròn tầm bắn (FOV).", "teal");
-            } else {
-                btn.classList.remove('active');
-                fov.classList.remove('active');
-                log("[CROSSHAIR] Đã tắt vòng tròn tầm bắn.", "muted");
-            }
-            playSound('click'); vibrate(20);
-        }
-
-        const ch = document.getElementById('floating-crosshair');
-        let dragging = false, startX, startY, initLeft, initTop;
-        const SENS_MULT = 1.5;
-
-        ch.addEventListener('mousedown', (e) => startDrag(e.clientX, e.clientY));
-        ch.addEventListener('touchstart', (e) => { e.preventDefault(); startDrag(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
-        document.addEventListener('mousemove', (e) => drag(e.clientX, e.clientY));
-        document.addEventListener('touchmove', (e) => { if(dragging) e.preventDefault(); drag(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
-        document.addEventListener('mouseup', () => dragging = false);
-        document.addEventListener('touchend', () => dragging = false);
-
-        function startDrag(x, y) {
-            if(!isCHOn || isCHLocked) return; 
-            dragging = true; startX = x; startY = y;
-            const rect = ch.getBoundingClientRect();
-            initLeft = rect.left + rect.width / 2; initTop = rect.top + rect.height / 2;
-        }
-
-        function drag(x, y) {
-            if (!dragging) return;
-            let newX = initLeft + (x - startX) * SENS_MULT;
-            let newY = initTop + (y - startY) * SENS_MULT;
-            newX = Math.max(20, Math.min(window.innerWidth - 20, newX));
-            newY = Math.max(20, Math.min(window.innerHeight - 20, newY));
-            ch.style.left = newX + 'px'; ch.style.top = newY + 'px';
-        }
-
-        function toggleCH() {
-            isCHOn = !isCHOn;
-            const box = document.getElementById('box-ch');
-            const txt = document.getElementById('txt-ch');
-            playSound('click'); vibrate(30);
-            
-            if (isCHOn) {
-                box.classList.add('active');
-                txt.style.color = currentCHColor; txt.innerText = "ĐANG BẬT";
-                document.body.classList.add('ch-active');
-                
-                if (typeof window.AppInventor !== 'undefined') {
-                    window.AppInventor.setWebViewString("SHOW_CROSSHAIR");
-                } else {
-                    ch.style.display = 'block'; ch.style.left = '50%'; ch.style.top = '50%';
-                    changeCHColor(currentCHColor); 
-                }
-                log("[CROSSHAIR] Tâm ảo đã bật.", "ruby");
-            } else {
-                box.classList.remove('active'); txt.style.color = 'var(--muted)'; txt.innerText = "ĐANG TẮT";
-                document.body.classList.remove('ch-active');
-                
-                if (typeof window.AppInventor !== 'undefined') {
-                    window.AppInventor.setWebViewString("HIDE_CROSSHAIR");
-                } else {
-                    ch.style.display = 'none'; 
-                    if(isFOVActive) toggleFOV(); 
-                }
-                log("[CROSSHAIR] Đã tắt.", "muted");
-            }
-        }
-
-        function toggleCHLock() {
-            isCHLocked = !isCHLocked;
-            const lockBtn = document.getElementById('ch-lock');
-            if(isCHLocked) {
-                lockBtn.innerText = '🔒'; lockBtn.classList.add('locked'); ch.classList.add('locked');
-                log("[CROSSHAIR] Tâm ảo đã KHÓA.", "warn");
-            } else {
-                lockBtn.innerText = '🔓'; lockBtn.classList.remove('locked'); ch.classList.remove('locked');
-                log("[CROSSHAIR] Tâm ảo đã MỞ KHÓA.", "emerald");
-            }
-            playSound('click'); vibrate(20);
-        }
-
-        function changeCHColor(color) {
-            currentCHColor = color;
-            document.querySelectorAll('.ch-dot, .ch-line-h, .ch-line-v, .ch-fov').forEach(el => {
-                el.style.background = color; 
-                el.style.boxShadow = `0 0 8px ${color}`;
-                if(el.classList.contains('ch-fov')) {
-                    el.style.background = 'transparent';
-                    el.style.borderColor = color;
-                    el.style.boxShadow = `inset 0 0 20px ${color}33`;
-                }
-            });
-            playSound('click'); vibrate(20);
         }
 
         function toggleStreamMode() {
@@ -866,6 +679,7 @@
             if(!key) { err.innerText = "VUI LÒNG NHẬP KEY!"; err.style.display = 'block'; playSound('error'); return; }
             
             btn.innerText = "ĐANG XÁC THỰC..."; btn.disabled = true; err.style.display = 'none';
+            document.activeElement.blur(); // Fix lỗi bàn phím ảo
 
             try {
                 const res = await fetch(SERVER_URL + "?t=" + Date.now());
@@ -1038,6 +852,7 @@
             playSound('click'); 
             navigator.clipboard.writeText(deviceID); 
             log("[HỆ THỐNG] Đã sao chép Hardware ID!", "success"); 
+            if(document.activeElement) document.activeElement.blur(); 
         }
 
         function exitApp() {
