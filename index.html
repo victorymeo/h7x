@@ -31,15 +31,15 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* FIX 1: Sửa lỗi không cuộn được trên điện thoại */
         body {
             background-color: var(--bg);
             color: var(--text);
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh; padding: 15px; 
-            overflow-y: auto; /* Cho phép cuộn dọc */
-            overflow-x: hidden; /* Ẩn thanh cuộn ngang */
+            overflow-y: auto; 
+            overflow-x: hidden; 
             position: relative;
+            -webkit-overflow-scrolling: touch;
         }
 
         #matrixCanvas {
@@ -61,7 +61,7 @@
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95), inset 0 0 20px rgba(255, 255, 255, 0.02);
             z-index: 10;
             transition: opacity 0.4s ease, transform 0.4s ease;
-            margin: 10px auto; /* Đảm bảo căn giữa khi cuộn */
+            margin: 10px auto; 
         }
 
         body.stream-mode .app-container {
@@ -282,11 +282,13 @@
         .log-warn { color: var(--gold); }
         .log-hex { color: #00f3ff; opacity: 0.8; font-size: 9px; }
         
-        .terminal-input-box { display: flex; border-top: 1px solid var(--border); background: rgba(0,0,0,0.5); }
-        .terminal-prefix { padding: 6px 8px; color: var(--emerald); font-weight: bold; }
+        /* THAY THẾ INPUT BẰNG DIV ĐỂ TRÁNH LỖI CRASH WEBVIEW */
+        .terminal-input-box { display: flex; border-top: 1px solid var(--border); background: rgba(0,0,0,0.5); padding: 6px 8px; align-items: center; gap: 5px; }
+        .terminal-prefix { color: var(--emerald); font-weight: bold; font-size: 11px;}
         .terminal-input { 
             flex: 1; background: transparent; border: none; color: var(--silver); 
             font-family: 'Share Tech Mono'; font-size: 11px; outline: none; 
+            caret-color: var(--emerald); /* Hiển thị con trỏ nhấp nháy */
         }
 
         .status-hud {
@@ -515,9 +517,10 @@
                         <div class="console-logs" id="console">
                             <div class="log-line" style="color: var(--muted);">> Hệ thống đang chờ lệnh...</div>
                         </div>
+                        <!-- THAY THẾ INPUT BẰNG DIV CONTENTEDITABLE -->
                         <div class="terminal-input-box">
                             <div class="terminal-prefix">root@extraly:~#</div>
-                            <input type="text" class="terminal-input" id="terminal-cmd" placeholder="Gõ 'help' để xem lệnh..." onkeydown="handleTerminal(event)">
+                            <div class="terminal-input" id="terminal-cmd" contenteditable="true" spellcheck="false" onkeydown="handleTerminal(event)">Gõ 'help' để xem lệnh...</div>
                         </div>
                     </div>
                 </div>
@@ -661,11 +664,13 @@
             return `<span style="color:#5a7a8a">${addr}:</span> <span style="color:#00f3ff">${hex}</span>`;
         }
 
+        // SỬA LẠI HÀM TERMINAL ĐỂ HOẠT ĐỘNG VỚI DIV CONTENTEDITABLE
         function handleTerminal(e) {
             if(e.key === 'Enter') {
+                e.preventDefault(); // Ngăn xuống dòng
                 const input = e.target;
-                const cmd = input.value.trim().toLowerCase();
-                input.value = '';
+                const cmd = input.innerText.replace('Gõ \'help\' để xem lệnh...', '').replace('root@extraly:~#', '').trim().toLowerCase();
+                input.innerText = ''; 
                 
                 if(!cmd) return;
                 playSound('click');
@@ -862,9 +867,6 @@
             
             btn.innerText = "ĐANG XÁC THỰC..."; btn.disabled = true; err.style.display = 'none';
 
-            // FIX 2: Đóng bàn phím ảo ngay lập tức để tránh lỗi Runtime clearFocus trên Android
-            document.activeElement.blur();
-
             try {
                 const res = await fetch(SERVER_URL + "?t=" + Date.now());
                 const text = await res.text();
@@ -1036,7 +1038,6 @@
             playSound('click'); 
             navigator.clipboard.writeText(deviceID); 
             log("[HỆ THỐNG] Đã sao chép Hardware ID!", "success"); 
-            document.activeElement.blur(); // Fix lỗi bàn phím ảo
         }
 
         function exitApp() {
@@ -1049,13 +1050,6 @@
                 window.close();
             }
         }
-
-        // Fix lỗi WebView bị crash khi chuyển đổi bàn phím
-        window.addEventListener('resize', () => {
-            if(document.activeElement && document.activeElement.tagName === 'INPUT') {
-                document.activeElement.blur();
-            }
-        });
     </script>
 </body>
 </html>
