@@ -31,11 +31,14 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* FIX 1: Sửa lỗi không cuộn được trên điện thoại */
         body {
             background-color: var(--bg);
             color: var(--text);
             display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; padding: 15px; overflow: hidden;
+            min-height: 100vh; padding: 15px; 
+            overflow-y: auto; /* Cho phép cuộn dọc */
+            overflow-x: hidden; /* Ẩn thanh cuộn ngang */
             position: relative;
         }
 
@@ -58,6 +61,7 @@
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95), inset 0 0 20px rgba(255, 255, 255, 0.02);
             z-index: 10;
             transition: opacity 0.4s ease, transform 0.4s ease;
+            margin: 10px auto; /* Đảm bảo căn giữa khi cuộn */
         }
 
         body.stream-mode .app-container {
@@ -758,7 +762,6 @@
                 txt.style.color = currentCHColor; txt.innerText = "ĐANG BẬT";
                 document.body.classList.add('ch-active');
                 
-                // GỬI LỆNH XUỐNG KODULAR ANDROID
                 if (typeof window.AppInventor !== 'undefined') {
                     window.AppInventor.setWebViewString("SHOW_CROSSHAIR");
                 } else {
@@ -770,7 +773,6 @@
                 box.classList.remove('active'); txt.style.color = 'var(--muted)'; txt.innerText = "ĐANG TẮT";
                 document.body.classList.remove('ch-active');
                 
-                // GỬI LỆNH XUỐNG KODULAR ANDROID
                 if (typeof window.AppInventor !== 'undefined') {
                     window.AppInventor.setWebViewString("HIDE_CROSSHAIR");
                 } else {
@@ -859,6 +861,9 @@
             if(!key) { err.innerText = "VUI LÒNG NHẬP KEY!"; err.style.display = 'block'; playSound('error'); return; }
             
             btn.innerText = "ĐANG XÁC THỰC..."; btn.disabled = true; err.style.display = 'none';
+
+            // FIX 2: Đóng bàn phím ảo ngay lập tức để tránh lỗi Runtime clearFocus trên Android
+            document.activeElement.blur();
 
             try {
                 const res = await fetch(SERVER_URL + "?t=" + Date.now());
@@ -1019,7 +1024,6 @@
             setTimeout(() => {
                 log("[SUCCESS] Đã gửi lệnh thành công!", "success");
                 
-                // FIX LỖI: Gửi tín hiệu cho App Android mở Game thay vì dùng intent://
                 if (typeof window.AppInventor !== 'undefined') {
                     window.AppInventor.setWebViewString("LAUNCH_GAME");
                 } else {
@@ -1028,24 +1032,30 @@
             }, 3000);
         }
 
-        // FIX LỖI LỘ LINK WEB KHI COPY
         function copyID() { 
             playSound('click'); 
             navigator.clipboard.writeText(deviceID); 
             log("[HỆ THỐNG] Đã sao chép Hardware ID!", "success"); 
+            document.activeElement.blur(); // Fix lỗi bàn phím ảo
         }
 
-        // FIX LỖI LỘ LINK WEB KHI THOÁT
         function exitApp() {
             playSound('error');
             log("[HỆ THỐNG] Đang đóng ứng dụng...", "warn");
             
             if (typeof window.AppInventor !== 'undefined') {
-                window.AppInventor.setWebViewString("EXIT_APP"); // Gửi lệnh đóng App
+                window.AppInventor.setWebViewString("EXIT_APP");
             } else {
                 window.close();
             }
         }
+
+        // Fix lỗi WebView bị crash khi chuyển đổi bàn phím
+        window.addEventListener('resize', () => {
+            if(document.activeElement && document.activeElement.tagName === 'INPUT') {
+                document.activeElement.blur();
+            }
+        });
     </script>
 </body>
 </html>
