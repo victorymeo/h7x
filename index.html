@@ -2,949 +2,1039 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MENU EXTRALY PREMIUM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EXTRALY PREMIUM VN</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap');
+
         :root {
-            --bg-dark: #050d10;
-            --card-bg: #071318;
-            --neon-cyan: #00e5ff;
-            --neon-blue: #0099cc;
-            --neon-teal: #00ffcc;
-            --text-gray: #557788;
-            --border-color: #0a2535;
-            --glow-cyan: rgba(0, 229, 255, 0.4);
+            --bg: #020406;
+            --card-bg: rgba(10, 14, 20, 0.85);
+            --silver: #b0c4de;
+            --silver-glow: rgba(176, 196, 222, 0.3);
+            --purple: #b400ff;
+            --purple-glow: rgba(180, 0, 255, 0.4);
+            --gold: #ffcc00;
+            --emerald: #00ff88;
+            --emerald-glow: rgba(0, 255, 136, 0.3);
+            --ruby: #ff0033;
+            --ruby-glow: rgba(255, 0, 51, 0.3);
+            --text: #e0f7fa;
+            --muted: #5a7a8a;
+            --border: rgba(255, 255, 255, 0.1);
         }
 
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            -webkit-user-select: none;
-            user-select: none;
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: 'Share Tech Mono', monospace;
+            user-select: none; -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: #000000 !important;
-            color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 15px;
-            overflow: hidden;
-        }
-
-        .menu-container {
-            background: linear-gradient(160deg, #061015 0%, #040c10 100%);
-            width: 100%;
-            max-width: 420px;
-            border-radius: 14px;
-            padding: 20px;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; padding: 15px; overflow: hidden;
             position: relative;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.9), 0 0 25px rgba(0, 229, 255, 0.08);
-            border: 1px solid #0a3040;
         }
 
-        #login-box {
-            text-align: center;
-            padding: 15px 0;
+        #matrixCanvas {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; opacity: 0.15; pointer-events: none;
         }
 
-        #login-box h1 {
-            font-size: 18px;
-            color: var(--neon-cyan);
-            margin-bottom: 20px;
-            letter-spacing: 1.5px;
-            text-shadow: 0 0 10px var(--glow-cyan);
-        }
+        body.ac-active { box-shadow: inset 0 0 80px rgba(0, 255, 136, 0.1); }
+        body.ch-active { box-shadow: inset 0 0 80px rgba(255, 0, 51, 0.1); }
+        body.stream-mode { background-color: transparent; }
 
-        .login-input {
-            width: 100%;
-            background: #071318;
-            border: 1px solid #0a3040;
-            padding: 12px;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 14px;
-            margin-bottom: 15px;
-            text-align: center;
-            outline: none;
-            transition: 0.2s;
-        }
-
-        .login-input:focus {
-            border-color: var(--neon-cyan);
-            box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 20px;
-            color: #555;
-            cursor: pointer;
-            transition: 0.2s;
+        .app-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            width: 100%; max-width: 410px;
+            border-radius: 16px; padding: 20px;
+            position: relative;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95), inset 0 0 20px rgba(255, 255, 255, 0.02);
             z-index: 10;
+            transition: opacity 0.4s ease, transform 0.4s ease;
         }
 
-        .close-btn:hover { color: #ff4444; }
-
-        .header-section {
-            display: flex;
-            align-items: center;
-            margin-top: 5px;
-            margin-bottom: 25px;
-            gap: 15px;
-            background: rgba(0, 229, 255, 0.02);
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #0a3040;
+        body.stream-mode .app-container {
+            opacity: 0; pointer-events: none; transform: scale(0.95);
         }
 
-        .logo-box {
-            flex: 1.2;
-            height: 75px;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        /* ================= GIAO DIỆN LOGIN ================= */
+        #login-screen { display: flex; flex-direction: column; align-items: center; animation: fadeIn 0.6s ease; }
+        
+        .login-logo {
+            font-family: 'Orbitron', sans-serif; font-size: 30px; font-weight: 900;
+            font-style: italic; letter-spacing: 4px; color: #fff;
+            text-shadow: 0 0 10px var(--silver), 0 0 30px var(--purple);
+            margin-bottom: 5px; text-align: center;
+        }
+        .login-sub { font-size: 11px; color: var(--purple); letter-spacing: 3px; margin-bottom: 30px; text-align: center; font-weight: bold; }
+
+        .terminal-box {
+            width: 100%; background: rgba(0,0,0,0.8);
+            border: 1px solid var(--purple); border-radius: 10px;
+            padding: 25px 20px; position: relative; overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.9), 0 0 15px rgba(180,0,255,0.1);
         }
 
-        .logo-text-clear {
-            font-family: 'Impact', 'Arial Black', sans-serif;
-            font-size: 27px;
-            font-weight: 900;
-            color: var(--neon-cyan);
-            text-transform: uppercase;
-            font-style: italic;
-            letter-spacing: 3.5px;
-            line-height: 1;
-            position: relative;
-            z-index: 2;
-            margin-top: 4px;
-            -webkit-text-stroke: 1px #020a0e;
-            filter: drop-shadow(0 0 2px var(--neon-cyan)) drop-shadow(0 0 8px rgba(0, 229, 255, 0.6));
-            transform: skewX(-10deg);
+        .input-group { position: relative; margin-bottom: 15px; }
+        .input-group input {
+            width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--muted);
+            padding: 12px 5px; color: var(--silver); font-size: 18px; font-family: 'Share Tech Mono';
+            outline: none; transition: 0.3s; letter-spacing: 3px; text-align: center;
+        }
+        .input-group input:focus { border-bottom-color: var(--purple); box-shadow: 0 10px 10px -10px var(--purple); }
+        .input-group input::placeholder { color: var(--muted); font-size: 13px; letter-spacing: 1px; }
+        
+        .remember-box { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 20px; }
+        .remember-box input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--purple); cursor: pointer; }
+        .remember-box label { color: var(--muted); font-size: 12px; cursor: pointer; letter-spacing: 1px; }
+
+        .btn-login {
+            width: 100%; padding: 15px; background: rgba(180, 0, 255, 0.1);
+            border: 1px solid var(--purple); color: #fff;
+            font-family: 'Orbitron', sans-serif; font-weight: bold; font-size: 15px;
+            letter-spacing: 2px; cursor: pointer; position: relative;
+            transition: 0.3s; text-transform: uppercase;
+            box-shadow: inset 0 0 10px rgba(180, 0, 255, 0.2);
+        }
+        .btn-login:hover, .btn-login:active { background: var(--purple); color: #fff; box-shadow: 0 0 25px var(--purple); }
+
+        .zalo-box { margin-top: 30px; text-align: center; font-size: 12px; color: var(--muted); }
+        .zalo-box a {
+            display: inline-block; margin-top: 10px; padding: 10px 20px;
+            background: rgba(255, 0, 51, 0.1); border: 1px solid var(--ruby);
+            color: #fff; text-decoration: none; border-radius: 6px;
+            font-weight: bold; box-shadow: 0 0 15px rgba(255, 0, 51, 0.2);
+            animation: pulseRed 2s infinite; letter-spacing: 1px;
         }
 
-        .ump-weapon, .shotgun-weapon {
-            position: absolute;
-            width: 60px;
-            height: auto;
-            filter: drop-shadow(0 0 4px var(--neon-cyan));
-            opacity: 0.75;
-            z-index: 1;
+        .device-id-box {
+            margin-top: 25px; padding: 12px; background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed var(--border); border-radius: 6px; text-align: center;
         }
-        .ump-weapon { top: -4px; right: -2px; }
-        .shotgun-weapon { bottom: -4px; left: -2px; width: 56px; }
+        .device-id-box span { font-size: 10px; color: var(--muted); display: block; margin-bottom: 8px; letter-spacing: 1px;}
+        .device-id-box strong { color: var(--silver); font-size: 16px; letter-spacing: 2px; }
 
-        .user-info-box {
-            flex: 1;
-            font-size: 11px;
-            border-left: 1px solid #0a3040;
-            padding-left: 12px;
+        /* ================= GIAO DIỆN CHÍNH ================= */
+        #main-app { display: none; animation: slideUp 0.5s ease; }
+        
+        .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .logo-area .logo { font-family: 'Orbitron'; font-size: 26px; font-style: italic; font-weight: 900; color: #fff; text-shadow: 0 0 10px var(--silver); }
+        .logo-area .sub { 
+            font-size: 10px; color: #000; font-weight: 900; letter-spacing: 1px; 
+            margin-top: 5px; background: linear-gradient(90deg, var(--silver), #fff); 
+            padding: 3px 8px; border-radius: 3px; display: inline-block;
+            box-shadow: 0 0 10px var(--silver-glow);
         }
+        
+        /* TRẠNG THÁI PROCESS */
+        .sys-status { text-align: right; font-size: 9px; color: var(--muted); line-height: 1.5; background: rgba(0,0,0,0.4); padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); margin-right: 10px;}
+        .sys-status span { color: var(--emerald); font-weight: bold; }
+        .sys-status .hidden { color: var(--purple); text-shadow: 0 0 5px var(--purple); }
 
-        .welcome-text {
-            color: #ffffff;
-            font-weight: bold;
-            margin-bottom: 5px;
-            font-size: 10px;
-            letter-spacing: 0.3px;
+        .btn-exit {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--muted);
+            color: var(--muted); font-family: 'Orbitron'; font-weight: bold; font-size: 12px;
+            padding: 8px 12px; border-radius: 6px; cursor: pointer;
+            transition: 0.2s; display: flex; align-items: center; justify-content: center; text-transform: uppercase;
         }
+        .btn-exit:active { background: var(--muted); color: #000; }
 
-        .info-label {
-            color: var(--text-gray);
-            font-size: 9px;
-            margin-top: 5px;
-            text-transform: uppercase;
-        }
-
-        .info-value {
-            color: #ffffff;
-            font-weight: 500;
-            margin-bottom: 2px;
-        }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+        .profile-bar {
+            display: flex; justify-content: space-between; background: rgba(0,0,0,0.5);
+            padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border);
             margin-bottom: 15px;
         }
+        .profile-item { text-align: left; }
+        .profile-item.right { text-align: right; }
+        .profile-item .lbl { color: var(--muted); font-size: 9px; letter-spacing: 1px; margin-bottom: 3px; }
+        .profile-item .val { color: #fff; font-weight: bold; font-size: 12px; }
+        .profile-item .vinh-vien { color: var(--gold); font-weight: 900; font-size: 14px; text-shadow: 0 0 5px var(--gold); letter-spacing: 1px;}
 
-        .feature-card {
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 115px;
-            border: 1px solid #0a2535;
+        /* THANH ĐO AN TOÀN */
+        .safety-meter {
+            background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 8px;
+            padding: 8px 12px; margin-bottom: 15px;
         }
+        .safety-header { display: flex; justify-content: space-between; font-size: 10px; font-weight: bold; margin-bottom: 5px; color: var(--silver); }
+        .safety-score { color: var(--emerald); font-size: 12px; text-shadow: 0 0 5px var(--emerald); }
+        .safety-bar-bg { width: 100%; height: 4px; background: #111; border-radius: 2px; overflow: hidden; }
+        .safety-bar-fill { width: 100%; height: 100%; background: var(--emerald); box-shadow: 0 0 10px var(--emerald); transition: width 0.5s ease; }
 
-        .feature-desc {
-            font-size: 9.5px;
-            color: #7ab0c0;
-            text-align: center;
-            text-transform: uppercase;
-            line-height: 1.4;
-            margin-bottom: 10px;
-            font-weight: 600;
-            letter-spacing: 0.2px;
+        .grid-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+        .card-btn {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.5));
+            border: 1px solid var(--border);
+            border-radius: 10px; padding: 15px 10px; text-align: center; cursor: pointer;
+            transition: 0.2s; position: relative; overflow: hidden;
         }
+        
+        .card-btn:not(.supreme) { border-left: 3px solid var(--silver); }
+        .card-btn:not(.supreme):active { background: rgba(176, 196, 222, 0.15); border-color: var(--silver); box-shadow: 0 0 15px var(--silver-glow); }
+        .card-btn:not(.supreme) .title { font-size: 11px; color: var(--muted); margin-bottom: 10px; font-weight: bold; }
+        .card-btn:not(.supreme) .btn-v { font-family: 'Orbitron'; font-size: 16px; font-weight: 900; color: var(--silver); text-shadow: 0 0 8px var(--silver-glow); }
+        
+        .card-btn.supreme { 
+            border: 1px solid var(--purple); 
+            background: linear-gradient(145deg, rgba(180, 0, 255, 0.15), rgba(0, 0, 0, 0.6)); 
+            animation: borderGlow 2s infinite alternate;
+        }
+        .card-btn.supreme .title { color: var(--gold); font-size: 11px; margin-bottom: 10px; font-weight: bold; }
+        .card-btn.supreme .btn-v { color: #fff; text-shadow: 0 0 10px var(--purple), 0 0 20px var(--gold); font-size: 14px; font-family: 'Orbitron'; font-weight: 900;}
+        .card-btn.supreme:active { transform: scale(0.96); background: rgba(180, 0, 255, 0.3); }
 
-        .action-btn {
-            width: 100%;
-            background: linear-gradient(180deg, #0077aa, #004466);
-            color: #ffffff;
-            border: 1px solid #0099cc;
-            border-radius: 6px;
-            padding: 9px 5px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 0 8px rgba(0, 153, 204, 0.3);
+        /* CHẾ ĐỘ STREAM (FULL WIDTH) */
+        .stream-panel {
+            background: rgba(0,0,0,0.5); border: 1px dashed var(--purple); border-radius: 10px;
+            padding: 12px 15px; display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 15px; cursor: pointer; transition: 0.3s;
         }
-        .action-btn:active {
-            transform: scale(0.97);
-            background: #003355;
-        }
+        .stream-panel:active { background: rgba(180, 0, 255, 0.1); }
+        .stream-info h3 { font-size: 12px; color: var(--purple); letter-spacing: 1px; font-weight:bold; }
+        .stream-info p { font-size: 9px; color: var(--muted); margin-top: 3px; }
+        .stream-icon { font-size: 20px; color: var(--purple); filter: drop-shadow(0 0 5px var(--purple)); }
 
-        /* ANTICHECK PANEL */
-        .anticheck-panel {
-            grid-column: span 2;
-            background: linear-gradient(135deg, #061318, #040e14);
-            border: 1px solid #0a3040;
-            border-radius: 10px;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        /* KHỐI ANTICHECK & TÂM ẢO */
+        .combat-modules {
+            background: rgba(0,0,0,0.6); border: 1px solid var(--border); border-radius: 10px;
+            padding: 15px; margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
         }
-
-        .anticheck-info {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .anticheck-title {
-            font-size: 13px;
-            font-weight: 800;
-            color: #ffffff;
-            letter-spacing: 0.5px;
-        }
-
-        .anticheck-sub {
-            font-size: 9.5px;
-            color: var(--neon-cyan);
-            font-weight: bold;
-            letter-spacing: 0.3px;
-        }
-
-        /* SWITCH */
-        .switch-container {
+        
+        .module-box {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+            background: rgba(255,255,255,0.02); border: 1px solid var(--border);
+            padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.2s;
             position: relative;
-            width: 74px;
-            height: 32px;
-            cursor: pointer;
         }
-        .switch-bg {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #0a1e28;
-            border: 1px solid #0a3040;
-            border-radius: 30px;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 8px;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        .module-box:active { transform: scale(0.95); }
+        
+        .module-box.antickeck.active { border-color: var(--emerald); background: rgba(0, 255, 136, 0.05); box-shadow: 0 0 15px var(--emerald-glow); }
+        .antickeck .mod-title { color: #fff; }
+        .antickeck.active .mod-status { color: var(--emerald); }
+        
+        .module-box.crosshair.active { border-color: var(--ruby); background: rgba(255, 0, 51, 0.05); box-shadow: 0 0 15px var(--ruby-glow); }
+        .crosshair .mod-title { color: #fff; }
+        .crosshair.active .mod-status { color: var(--ruby); }
+
+        .mod-title { font-size: 11px; font-weight: 900; letter-spacing: 0.5px; }
+        .mod-status { font-size: 9px; color: var(--muted); font-weight: bold; }
+        
+        .toggle-btn {
+            width: 54px; height: 26px; background: #111; border-radius: 20px;
+            position: relative; border: 1px solid #333; transition: 0.3s;
         }
-        .switch-text {
-            font-size: 9px;
-            font-weight: 900;
-            font-family: monospace;
-            color: #3a6070;
-            transition: 0.3s;
+        .toggle-btn::after {
+            content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px;
+            background: #555; border-radius: 50%; transition: 0.3s;
         }
-        .switch-text.text-off { margin-left: auto; }
-        .switch-text.text-on { display: none; margin-right: auto; color: #000000; }
-        .switch-handle {
-            position: absolute;
-            top: 3px;
-            left: 4px;
-            width: 24px;
-            height: 24px;
-            background: linear-gradient(180deg, #aaddee, #5599bb);
-            border-radius: 50%;
-            transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+        .antickeck.active .toggle-btn { border-color: var(--emerald); background: rgba(0,255,136,0.1); }
+        .antickeck.active .toggle-btn::after { left: 30px; background: var(--emerald); box-shadow: 0 0 10px var(--emerald); }
+        
+        .crosshair.active .toggle-btn { border-color: var(--ruby); background: rgba(255,0,51,0.1); }
+        .crosshair.active .toggle-btn::after { left: 30px; background: var(--ruby); box-shadow: 0 0 10px var(--ruby); }
+
+        /* Bảng màu, Khóa và FOV */
+        .ch-options { display: none; gap: 6px; margin-top: 5px; flex-wrap: wrap; justify-content: center; align-items: center; }
+        .crosshair.active .ch-options { display: flex; }
+        
+        .color-dot { width: 12px; height: 12px; border-radius: 50%; cursor: pointer; border: 1px solid rgba(255,255,255,0.3); transition: 0.2s; }
+        .color-dot:hover { transform: scale(1.3); border-color: #fff; }
+        
+        .lock-btn, .fov-btn { 
+            width: 20px; height: 20px; border-radius: 4px; background: rgba(255,255,255,0.1); 
+            border: 1px solid var(--muted); display: flex; justify-content: center; align-items: center; 
+            font-size: 10px; cursor: pointer; transition: 0.2s;
         }
-        .switch-container.active .switch-bg {
-            background-color: var(--neon-cyan);
-            border-color: var(--neon-teal);
-            box-shadow: 0 0 12px rgba(0, 229, 255, 0.5);
-        }
-        .switch-container.active .switch-handle {
-            left: 44px;
-            background: linear-gradient(180deg, #ffffff, #00ccff);
-        }
-        .switch-container.active .text-off { display: none; }
-        .switch-container.active .text-on { display: block; }
+        .lock-btn.locked { border-color: var(--ruby); background: rgba(255,0,51,0.2); color: var(--ruby); }
+        .fov-btn.active { border-color: var(--cyan); background: rgba(0, 243, 255, 0.2); color: var(--cyan); box-shadow: 0 0 5px var(--cyan); }
 
         /* CONSOLE */
-        .console-box {
-            background: #030c10;
-            border: 1px solid #0a2535;
-            border-radius: 8px;
-            padding: 12px;
-            height: 170px;
-            overflow-y: auto;
-            font-family: monospace;
-            font-size: 11px;
-            color: var(--neon-cyan);
-            margin-bottom: 15px;
-            text-align: left;
-            line-height: 1.6;
-            box-shadow: inset 0 0 8px rgba(0,0,0,0.8);
-            position: relative;
+        .console-container {
+            background: #010204; border: 1px solid var(--border);
+            border-radius: 8px; height: 220px; display: flex; flex-direction: column; overflow: hidden;
         }
-
-        .console-with-char {
-            display: flex;
-            gap: 8px;
-            align-items: flex-start;
-            height: 100%;
-        }
-
+        .console-content { display: flex; flex: 1; overflow: hidden; }
         .sens-panel {
-            width: 90px;
-            min-width: 90px;
-            display: none;
-            flex-direction: column;
-            gap: 4px;
-            background: #040e14;
-            border: 1px solid #0a3040;
-            border-radius: 6px;
-            padding: 5px 4px;
-            box-shadow: 0 0 8px rgba(0,229,255,0.1);
+            width: 110px; background: rgba(255, 255, 255, 0.02); border-right: 1px solid var(--border);
+            padding: 10px 8px; display: none; flex-direction: column; gap: 5px;
         }
-
-        .sens-panel.visible {
-            display: flex;
-        }
-
-        .sens-title {
-            font-size: 8px;
-            color: var(--neon-cyan);
-            font-weight: 900;
-            text-align: center;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            border-bottom: 1px solid #0a3040;
-            padding-bottom: 3px;
-            margin-bottom: 2px;
-        }
-
-        .sens-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 7px;
-            color: #557788;
-            font-family: monospace;
-        }
-
-        .sens-val {
-            color: #00ffcc;
-            font-weight: bold;
-            font-size: 8px;
-        }
-
+        .sens-panel.active { display: flex; }
+        .sens-title { font-size: 10px; color: var(--silver); text-align: center; font-weight: bold; margin-bottom: 5px; border-bottom: 1px dashed var(--border); padding-bottom: 5px; }
+        .sens-row { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); }
+        .sens-row .val { color: var(--emerald); font-weight: bold; font-size: 11px;}
+        
         .fire-btn {
-            width: 100%;
-            margin-top: 4px;
-            padding: 5px 2px;
-            background: linear-gradient(180deg, #ff3300, #991100);
-            border: 1px solid #ff4400;
-            border-radius: 5px;
-            color: #fff;
-            font-size: 8px;
-            font-weight: 900;
-            cursor: pointer;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            box-shadow: 0 0 8px rgba(255,50,0,0.4);
-            transition: 0.15s;
-            font-family: monospace;
+            margin-top: auto; background: rgba(255, 0, 51, 0.1); border: 1px solid var(--ruby);
+            color: var(--ruby); font-weight: 900; font-size: 11px; padding: 8px 0;
+            border-radius: 4px; cursor: pointer; transition: 0.1s; text-shadow: 0 0 5px var(--ruby);
+        }
+        .fire-btn:active { background: var(--ruby); color: #fff; box-shadow: 0 0 15px var(--ruby); }
+
+        .console-wrapper { flex: 1; display: flex; flex-direction: column; }
+        .console-logs { flex: 1; padding: 10px; overflow-y: auto; font-size: 10px; line-height: 1.6; color: var(--silver); }
+        .log-line { margin-bottom: 4px; word-break: break-all; animation: typeIn 0.15s ease-out; }
+        .log-success { color: var(--emerald); font-weight: bold; }
+        .log-error { color: var(--ruby); }
+        .log-warn { color: var(--gold); }
+        .log-hex { color: #00f3ff; opacity: 0.8; font-size: 9px; }
+        
+        /* Ô nhập lệnh Terminal */
+        .terminal-input-box { display: flex; border-top: 1px solid var(--border); background: rgba(0,0,0,0.5); }
+        .terminal-prefix { padding: 6px 8px; color: var(--emerald); font-weight: bold; }
+        .terminal-input { 
+            flex: 1; background: transparent; border: none; color: var(--silver); 
+            font-family: 'Share Tech Mono'; font-size: 11px; outline: none; 
         }
 
-        .fire-btn:active {
-            transform: scale(0.94);
-            background: #cc2200;
+        /* HUD */
+        .status-hud {
+            display: flex; justify-content: space-between; background: rgba(255, 255, 255, 0.03);
+            padding: 4px 10px; border-top: 1px solid var(--border); font-size: 9px; color: var(--muted);
         }
+        .hud-val { color: var(--silver); font-weight: bold; }
+        .hud-val.temp-high { color: var(--ruby); animation: blink 1s infinite; }
 
-        .console-logs {
-            flex: 1;
-            overflow-y: auto;
-            max-height: 146px;
+        /* TÂM ẢO THẬT VÀ FOV */
+        #floating-crosshair {
+            display: none; position: fixed; z-index: 99999; width: 40px; height: 40px;
+            transform: translate(-50%, -50%); pointer-events: auto; cursor: grab;
+            transition: filter 0.2s;
         }
+        #floating-crosshair.locked { cursor: default; pointer-events: none; filter: drop-shadow(0 0 10px #fff); }
+        #floating-crosshair:active { cursor: grabbing; }
+        
+        .ch-dot { width: 4px; height: 4px; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--ruby); box-shadow: 0 0 8px var(--ruby); }
+        .ch-line-h { width: 30px; height: 2px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--ruby); box-shadow: 0 0 8px var(--ruby); }
+        .ch-line-v { width: 2px; height: 30px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--ruby); box-shadow: 0 0 8px var(--ruby); }
+        
+        /* Vòng tròn FOV */
+        .ch-fov {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 150px; height: 150px; border-radius: 50%;
+            border: 1px dashed var(--cyan); display: none;
+            box-shadow: inset 0 0 20px rgba(0, 243, 255, 0.1);
+        }
+        .ch-fov.active { display: block; }
 
-        .console-line {
-            white-space: pre-wrap;
-            word-break: break-all;
-            margin-bottom: 3px;
+        #stream-restore-btn {
+            display: none; position: fixed; bottom: 20px; right: 20px;
+            width: 40px; height: 40px; background: rgba(180, 0, 255, 0.2);
+            border: 1px solid var(--purple); border-radius: 50%; z-index: 99998;
+            justify-content: center; align-items: center; cursor: pointer;
+            opacity: 0.5; transition: 0.3s; box-shadow: 0 0 20px var(--purple);
         }
+        #stream-restore-btn:hover { opacity: 1; transform: scale(1.1); }
+        #stream-restore-btn::after { content: '👁️'; font-size: 18px; }
 
-        .footer-status {
-            font-size: 12px;
-            color: var(--neon-cyan);
-            font-weight: bold;
-            font-family: monospace;
-            margin-top: 5px;
+        /* MODALS */
+        .modal-overlay {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 4, 6, 0.95); backdrop-filter: blur(10px);
+            border-radius: 16px; z-index: 100; flex-direction: column; justify-content: center; align-items: center;
+            padding: 30px; text-align: center;
         }
+        .modal-overlay.active { display: flex; }
+        .modal-title { font-family: 'Orbitron'; font-size: 20px; color: var(--ruby); text-shadow: 0 0 10px var(--ruby); margin-bottom: 15px; }
+        .modal-desc { font-size: 13px; color: #ccc; margin-bottom: 20px; line-height: 1.5;}
+        .modal-btn { padding: 12px; width: 100%; border: 1px solid var(--purple); background: transparent; color: var(--purple); font-family: 'Orbitron'; font-weight: bold; cursor: pointer; margin-bottom: 10px; transition: 0.2s; text-transform: uppercase;}
+        .modal-btn:hover { background: var(--purple); color: #fff; box-shadow: 0 0 15px var(--purple); }
+        .modal-btn.cancel { border-color: var(--muted); color: var(--muted); }
+        .modal-btn.cancel:hover { background: var(--muted); color: #000; box-shadow: none;}
 
-        /* MODAL */
-        .activation-modal {
-            display: none;
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(3, 10, 14, 0.97);
-            border-radius: 14px;
-            z-index: 100;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 25px;
-            box-sizing: border-box;
+        #loading-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; z-index: 999999; flex-direction: column; justify-content: center; align-items: center;
         }
+        .load-box { width: 80%; max-width: 300px; text-align: center; }
+        .load-text { font-family: 'Share Tech Mono'; color: var(--purple); font-size: 13px; margin-bottom: 15px; height: 20px; }
+        .load-bar-bg { width: 100%; height: 4px; background: #111; border-radius: 2px; overflow: hidden; border: 1px solid rgba(180,0,255,0.2); }
+        .load-bar-fill { width: 0%; height: 100%; background: var(--purple); box-shadow: 0 0 10px var(--purple); transition: width 0.1s; }
+        .load-percent { font-family: 'Orbitron'; color: var(--purple); font-size: 22px; margin-top: 10px; font-weight: bold; }
 
-        .modal-icon-gamepad {
-            width: 55px;
-            height: auto;
-            margin-bottom: 15px;
-            filter: drop-shadow(0 4px 10px rgba(0, 229, 255, 0.3));
-            opacity: 0.85;
-        }
-
-        .modal-title-game {
-            font-size: 18px;
-            font-weight: 800;
-            color: #ffffff;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            text-align: center;
-        }
-
-        .modal-text-game {
-            font-size: 12.5px;
-            color: #bbbbbb;
-            line-height: 1.5;
-            margin-bottom: 25px;
-            text-align: center;
-        }
-
-        .game-select-btn-flat {
-            width: 100%;
-            padding: 16px 10px;
-            font-size: 14px;
-            font-weight: 800;
-            border-radius: 10px;
-            cursor: pointer;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border: none;
-            color: #ffffff;
-            transition: all 0.2s ease;
-            text-align: center;
-        }
-
-        .btn-orange-tone {
-            background: linear-gradient(180deg, #0088cc, #005588);
-            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3);
-        }
-        .btn-blue-tone {
-            background: linear-gradient(180deg, #00ccaa, #008877);
-            box-shadow: 0 4px 15px rgba(0, 204, 170, 0.3);
-            color: #000000;
-        }
-
-        .btn-dark-close {
-            background: #071318;
-            color: #aaaaaa;
-            border: 1px solid #0a3040;
-            width: 100%;
-            padding: 13px 10px;
-            font-size: 13px;
-            font-weight: bold;
-            border-radius: 8px;
-            margin-top: 5px;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: 0.2s;
-        }
-
-        .device-box {
-            background: #061318;
-            border: 1px dashed var(--neon-cyan);
-            padding: 10px;
-            border-radius: 6px;
-            font-family: monospace;
-            font-size: 13px;
-            color: var(--neon-cyan);
-            font-weight: bold;
-            width: 100%;
-            margin-bottom: 15px;
-            cursor: pointer;
-            text-align: center;
-        }
-
-        /* CROSSHAIR */
-        #crosshairOverlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            z-index: 9999;
-            pointer-events: none;
-            justify-content: center;
-            align-items: center;
-        }
-        #crosshairOverlay.active { display: flex; }
-        .ch-wrap {
-            position: relative;
-            width: 80px; height: 80px;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .ch-ring {
-            position: absolute;
-            border-radius: 50%;
-            border: 1.5px solid rgba(0, 229, 255, 0.6);
-            animation: chPulse 1.5s ease-in-out infinite;
-        }
-        .ch-ring:nth-child(1) { width: 80px; height: 80px; animation-delay: 0s; }
-        .ch-ring:nth-child(2) { width: 55px; height: 55px; border-color: rgba(255,255,255,0.4); animation-delay: .3s; }
-        .ch-ring:nth-child(3) { width: 30px; height: 30px; border-color: rgba(0,229,255,0.8); animation-delay: .6s; }
-        @keyframes chPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.08)} }
-        .ch-line-h, .ch-line-v { position: absolute; background: rgba(0, 229, 255, 0.8); }
-        .ch-line-h { width: 50px; height: 1px; top: 50%; left: 50%; transform: translate(-50%,-50%); }
-        .ch-line-v { width: 1px; height: 50px; top: 50%; left: 50%; transform: translate(-50%,-50%); }
-        .ch-dot { width: 5px; height: 5px; border-radius: 50%; background: #ffffff; box-shadow: 0 0 8px var(--neon-cyan); }
-        .ch-close-btn {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            pointer-events: all;
-            background: rgba(3,10,14,0.95);
-            border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan);
-            font-size: 12px;
-            font-weight: bold;
-            padding: 8px 24px;
-            border-radius: 20px;
-            cursor: pointer;
-            letter-spacing: 1px;
-            font-family: monospace;
-            box-shadow: 0 0 10px rgba(0,229,255,0.2);
-        }
-
-        /* SCROLLBAR */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #040c10; }
-        ::-webkit-scrollbar-thumb { background: #0a4060; border-radius: 2px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulseRed { 0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 51, 0.3); } 50% { box-shadow: 0 0 20px rgba(255, 0, 51, 0.6); } }
+        @keyframes borderGlow { from { box-shadow: 0 0 10px rgba(180, 0, 255, 0.3); } to { box-shadow: 0 0 25px rgba(180, 0, 255, 0.7); } }
+        @keyframes typeIn { from { opacity: 0; transform: translateX(-5px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes blink { 50% { opacity: 0.5; } }
+        
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--border); }
     </style>
 </head>
 <body>
 
-    <div class="menu-container">
-        <div class="close-btn" onclick="closeMenu()">✕</div>
+    <canvas id="matrixCanvas"></canvas>
 
-        <div id="login-box">
-            <h1>HỆ THỐNG XÁC THỰC</h1>
-            <input type="password" id="passInput" class="login-input" placeholder="Nhập Key kích hoạt hệ thống...">
-            <button class="action-btn" id="loginBtn" onclick="handleLogin()" style="padding: 12px; background: linear-gradient(180deg, var(--neon-cyan), var(--neon-blue)); color: #000; border: none; font-weight: 900;">KÍCH HOẠT NGAY</button>
-            <p id="error" style="color: #ff4444; font-size: 12px; text-align: center; display: none; margin-top: 15px; font-weight: 600;"></p>
-
-            <div style="background: rgba(0,229,255,0.01); border: 1px dashed #0a3040; padding: 12px; border-radius: 8px; text-align: center; margin-top: 25px;">
-                <div style="font-size: 10px; color: #557788; margin-bottom: 5px; letter-spacing: 0.5px;">MÃ MÁY (DEVICE ID):</div>
-                <div id="displayDeviceIDLogin" style="color: var(--neon-cyan); font-weight: bold; font-family: monospace; font-size: 13px;">DEV-LOADING...</div>
-                <button onclick="copyMyDeviceID()" style="background: rgba(0,229,255,0.05); border: 1px solid rgba(0,229,255,0.2); color: var(--neon-cyan); font-size: 10px; padding: 4px 10px; border-radius: 4px; margin-top: 8px; cursor: pointer; font-weight: bold;">SAO CHÉP MÃ</button>
-            </div>
-        </div>
-
-        <div id="main-app" style="display: none;">
-
-            <div class="activation-modal" id="activationModal">
-                <div style="font-size: 35px; color: #ff3333; margin-bottom: 10px;">🔒</div>
-                <div class="modal-title-game" style="color: #ff3333;" id="modalFeatureName">TRUY CẬP BỊ TỪ CHỐI</div>
-                <div class="modal-text-game" id="modalFeatureDesc">Gói của bạn không hỗ trợ tính năng này.</div>
-                <div class="device-box" id="modalDeviceID" onclick="copyModalDeviceID()">DEV-XXXXXX</div>
-                <button class="action-btn" onclick="redirectToAdmin()" style="background: linear-gradient(180deg, var(--neon-cyan), var(--neon-blue)); color: #000; margin-bottom: 10px; padding: 12px; font-weight: bold; border: none;">GỬI MÃ ĐẾN ZALO ADMIN</button>
-                <button class="btn-dark-close" onclick="closeModal()">QUAY LẠI</button>
-            </div>
-
-            <div class="activation-modal" id="gameSelectModal">
-                <svg class="modal-icon-gamepad" viewBox="0 0 24 24" fill="currentColor" style="color: var(--neon-cyan);">
-                    <path d="M21,6H3A3,3 0 0,0 0,9V15A3,3 0 0,0 3,18H21A3,3 0 0,0 24,15V9A3,3 0 0,0 21,6M6,13H5V14A1,1 0 0,1 4,15A1,1 0 0,1 3,14V13H2A1,1 0 0,1 1,12A1,1 0 0,1 2,11H3V10A1,1 0 0,1 4,9A1,1 0 0,1 5,10V11H6A1,1 0 0,1 7,12A1,1 0 0,1 6,13M15.5,14A1.5,1.5 0 1,1 17,12.5A1.5,1.5 0 0,1 15.5,14M18.5,11A1.5,1.5 0 1,1 20,9.5A1.5,1.5 0 0,1 18.5,11Z" opacity="0.65" />
-                </svg>
-
-                <div class="modal-title-game" id="gameSelectTitle" style="color: var(--neon-cyan);">ĐÃ KÍCH HOẠT XONG EXTRALY PREMIUM</div>
-                <div class="modal-text-game">
-                    Dữ liệu đã nạp hoàn tất. Vui lòng chọn phiên bản game bạn muốn chơi để hệ thống tự động mở:
-                </div>
-
-                <button class="game-select-btn-flat btn-orange-tone" onclick="launchGame('com.dts.freefireth')">FREE FIRE THƯỜNG</button>
-                <button class="game-select-btn-flat btn-blue-tone" onclick="launchGame('com.dts.freefiremax')">FREE FIRE MAX</button>
-                <button class="btn-dark-close" onclick="closeGameModal()">ĐÓNG</button>
-            </div>
-
-            <div class="header-section">
-                <div class="logo-box">
-                    <svg class="ump-weapon" viewBox="0 0 120 50">
-                        <path d="M10,25 L30,25 L35,21 L55,21 L60,16 L75,16 L78,21 L95,21 L102,17 L112,17 L115,22 L105,27 L95,27 L92,34 L82,34 L82,27 L50,27 L48,34 L40,34 L38,27 L22,27 L22,36 L16,36 L16,27 L10,27 Z" fill="#00e5ff" />
-                        <path d="M84,28 L90,39 L105,39 L101,28 Z" fill="none" stroke="#00e5ff" stroke-width="1.5" />
-                    </svg>
-                    <svg class="shotgun-weapon" viewBox="0 0 120 40">
-                        <path d="M15,22 L45,22 L52,17 L95,17 L102,13 L118,13 L118,18 L105,21 L70,21 L62,26 L30,26 L15,30 Z" fill="#00e5ff" />
-                        <circle cx="28" cy="24" r="1" fill="#000" />
-                    </svg>
-                    <div class="logo-text-clear">EXTRALY</div>
-                </div>
-
-                <div class="user-info-box">
-                    <div class="welcome-text">Support For FFTH And FFMAX</div>
-                    <div class="info-label">Tài Khoản (ID Máy)</div>
-                    <div id="userDeviceID" class="info-value" style="color: var(--neon-cyan); font-family: monospace; font-size: 12px;">DEV-XXXXXX</div>
-                    <div class="info-label">Thời Hạn</div>
-                    <div class="info-value" style="color: #cccccc; font-size: 12px;">1 OB</div>
-                </div>
-            </div>
-
-            <div class="grid-container">
-                <div class="feature-card">
-                    <div class="feature-desc">BẢN TIÊU CHUẨN STANDARD</div>
-                    <button class="action-btn" onclick="triggerFeature('V1')">V1</button>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-desc">THE BEST FIT FOR 4VS4 NEW VERSION</div>
-                    <button class="action-btn" onclick="triggerFeature('V2')">V2</button>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-desc">THE BEST FIT FOR 6VS6 PRO</div>
-                    <button class="action-btn" onclick="triggerFeature('V3')">V3</button>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-desc">INCLUDES ALL THE BEST SENSITIVITY PREMIUM</div>
-                    <button class="action-btn" onclick="triggerFeature('Extraly Premium')" style="background: linear-gradient(180deg, var(--neon-cyan), var(--neon-blue)); color: #000; font-weight: bold; border: none; box-shadow: 0 0 10px rgba(0,229,255,0.4)">PREMIUM</button>
-                </div>
-                
-                <div class="anticheck-panel">
-                    <div class="anticheck-info">
-                        <span class="anticheck-title">🛡️ ANTICHECK BYPASS</span>
-                        <span class="anticheck-sub">AN TOÀN / KHÔNG SỢ QUÉT CORES</span>
-                    </div>
-                    <div class="switch-container" id="anticheckSwitch" onclick="toggleCrosshair()">
-                        <div class="switch-bg">
-                            <span class="switch-text text-on">ON</span>
-                            <span class="switch-text text-off">OFF</span>
-                        </div>
-                        <div class="switch-handle"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="console-box" id="consoleBox">
-                <div class="console-with-char">
-                    <div class="sens-panel" id="sensPanel">
-                        <div class="sens-title">⚡ ĐỘ NHẠY</div>
-                        <div class="sens-row"><span>Nhìn XQ</span><span class="sens-val" id="sGen">--</span></div>
-                        <div class="sens-row"><span>Hồng tâm</span><span class="sens-val" id="sRed">--</span></div>
-                        <div class="sens-row"><span>Ống 2x</span><span class="sens-val" id="s4x">--</span></div>
-                        <div class="sens-row"><span>Ống 4x</span><span class="sens-val" id="sAwm">--</span></div>
-                        <div class="sens-row"><span>Súng ngắm</span><span class="sens-val" id="sFree">--</span></div>
-                        <div class="sens-row"><span>Camera</span><span class="sens-val" id="sCam">--</span></div>
-                        <button class="fire-btn" id="fireBtn" onclick="fireShot()">🔴 BẮN: <span id="firePower">--</span></button>
-                    </div>
-                    <div class="console-logs" id="consoleLog">
-                        <div class="console-line" style="color: #1a4455;">[SYSTEM]: Chờ lệnh nạp dữ liệu từ người dùng...</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="footer-status" id="statusText">>> Trạng thái: Sẵn sàng</div>
+    <div id="loading-overlay">
+        <div class="load-box">
+            <div class="load-text" id="load-text">> ĐANG KẾT NỐI MÁY CHỦ BẢO MẬT...</div>
+            <div class="load-bar-bg"><div class="load-bar-fill" id="load-bar"></div></div>
+            <div class="load-percent" id="load-percent">0%</div>
         </div>
     </div>
 
-    <div id="crosshairOverlay">
-        <div class="ch-wrap">
-            <div class="ch-ring"></div>
-            <div class="ch-ring"></div>
-            <div class="ch-ring"></div>
-            <div class="ch-line-h"></div>
-            <div class="ch-line-v"></div>
-            <div class="ch-dot"></div>
+    <div id="floating-crosshair">
+        <div class="ch-fov" id="ch-fov"></div>
+        <div class="ch-line-h"></div>
+        <div class="ch-line-v"></div>
+        <div class="ch-dot"></div>
+    </div>
+
+    <div id="stream-restore-btn" onclick="toggleStreamMode()"></div>
+
+    <div class="app-container" id="main-container">
+        
+        <div id="login-screen">
+            <div class="login-logo">EXTRALY</div>
+            <div class="login-sub">HỆ THỐNG XÁC THỰC BẢO MẬT</div>
+
+            <div class="terminal-box">
+                <div class="input-group">
+                    <input type="password" id="key-input" placeholder="NHẬP KEY KÍCH HOẠT" autocomplete="off">
+                </div>
+                <div class="remember-box">
+                    <input type="checkbox" id="remember-key">
+                    <label for="remember-key">Ghi nhớ Key cho lần sau</label>
+                </div>
+                <button class="btn-login" id="btn-login" onclick="handleLogin()">KÍCH HOẠT NGAY</button>
+                <p id="login-err" style="color: var(--ruby); font-size: 11px; margin-top: 10px; display: none; text-align: center;"></p>
+            </div>
+
+            <div class="device-id-box">
+                <span>MÃ THIẾT BỊ (HARDWARE ID):</span>
+                <strong id="dev-id-display">DEV-XXXXXX</strong>
+                <div style="font-size: 10px; color: var(--silver); margin-top: 8px; cursor: pointer; text-decoration: underline;" onclick="copyID()">[ SAO CHÉP MÃ ]</div>
+            </div>
+
+            <div class="zalo-box">
+                CẦN HỖ TRỢ HOẶC MUA KEY?<br>
+                <a href="https://zalo.me/0399622707" target="_blank">LIÊN HỆ ZALO: 0399622707</a>
+            </div>
         </div>
-        <button class="ch-close-btn" onclick="toggleCrosshair()">✕ TẮT ANTICHECK</button>
+
+        <div id="main-app">
+            <div class="header-top">
+                <div class="logo-area">
+                    <div class="logo">EXTRALY</div>
+                    <div class="sub">HỖ TRỢ FREE FIRE VN</div>
+                </div>
+                <div style="display:flex; align-items:center;">
+                    <div class="sys-status">
+                        PROC: <span class="hidden" id="proc-status">HIDDEN</span><br>
+                        LOC: <span>🇻🇳 VN</span>
+                    </div>
+                    <div class="btn-exit" onclick="exitApp()">⏻</div>
+                </div>
+            </div>
+
+            <div class="profile-bar">
+                <div class="profile-item">
+                    <div class="lbl">TÀI KHOẢN</div>
+                    <div class="val" id="user-id-display">DEV-XXXXXX</div>
+                </div>
+                <div class="profile-item right">
+                    <div class="lbl">HẠN DÙNG</div>
+                    <div class="vinh-vien">VĨNH VIỄN</div>
+                </div>
+            </div>
+
+            <div class="safety-meter">
+                <div class="safety-header">
+                    <span>ĐỘ AN TOÀN HỆ THỐNG</span>
+                    <span class="safety-score" id="safety-score">100%</span>
+                </div>
+                <div class="safety-bar-bg">
+                    <div class="safety-bar-fill" id="safety-bar" style="width: 100%;"></div>
+                </div>
+            </div>
+
+            <div class="grid-menu">
+                <div class="card-btn" onclick="inject('V1')">
+                    <div class="title">TIÊU CHUẨN<br>STANDARD</div>
+                    <div class="btn-v">V1</div>
+                </div>
+                <div class="card-btn" onclick="inject('V2')">
+                    <div class="title">THI ĐẤU 4VS4<br>PRO</div>
+                    <div class="btn-v">V2</div>
+                </div>
+                <div class="card-btn" onclick="inject('V3')">
+                    <div class="title">THI ĐẤU 6VS6<br>ELITE</div>
+                    <div class="btn-v">V3</div>
+                </div>
+                <div class="card-btn supreme" onclick="inject('SUPREME VIP')">
+                    <div class="title">SUPREME<br>ACCESS</div>
+                    <div class="btn-v">VIP</div>
+                </div>
+            </div>
+
+            <!-- CHẾ ĐỘ STREAM FULL WIDTH -->
+            <div class="stream-panel" onclick="toggleStreamMode()">
+                <div class="stream-info">
+                    <h3>CHẾ ĐỘ STREAM</h3>
+                    <p>Ẩn toàn bộ UI khi đang thi đấu / quay màn hình</p>
+                </div>
+                <div class="stream-icon">👁️‍🗨️</div>
+            </div>
+
+            <div class="combat-modules">
+                <div class="module-box antickeck" id="box-ac" onclick="toggleAC()">
+                    <div class="mod-title">🛡️ ANTICHECK</div>
+                    <div class="mod-status" id="txt-ac" style="color: var(--muted);">ĐANG TẮT</div>
+                    <div class="toggle-btn"></div>
+                </div>
+                <div class="module-box crosshair" id="box-ch" onclick="toggleCH()">
+                    <div class="mod-title">🎯 TÂM ẢO REAL</div>
+                    <div class="mod-status" id="txt-ch" style="color: var(--muted);">ĐANG TẮT</div>
+                    <div class="toggle-btn"></div>
+                    
+                    <div class="ch-options" onclick="event.stopPropagation()">
+                        <div class="color-dot" style="background: #ff0033;" onclick="changeCHColor('#ff0033')"></div>
+                        <div class="color-dot" style="background: #00ff88;" onclick="changeCHColor('#00ff88')"></div>
+                        <div class="color-dot" style="background: #00f3ff;" onclick="changeCHColor('#00f3ff')"></div>
+                        <div class="color-dot" style="background: #ffcc00;" onclick="changeCHColor('#ffcc00')"></div>
+                        <div class="color-dot" style="background: #b400ff;" onclick="changeCHColor('#b400ff')"></div>
+                        <div class="color-dot" style="background: #ffffff;" onclick="changeCHColor('#ffffff')"></div>
+                        <div class="lock-btn" id="ch-lock" onclick="toggleCHLock()">🔓</div>
+                        <div class="fov-btn" id="ch-fov-btn" onclick="toggleFOV()">📡</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="console-container">
+                <div class="console-content">
+                    <div class="sens-panel" id="sens-panel">
+                        <div class="sens-title">⚡ ĐỘ NHẠY</div>
+                        <div class="sens-row"><span>Nhìn</span><span class="val" id="s1">--</span></div>
+                        <div class="sens-row"><span>Hồng tâm</span><span class="val" id="s2">--</span></div>
+                        <div class="sens-row"><span>Ống 2x</span><span class="val" id="s3">--</span></div>
+                        <div class="sens-row"><span>Ống 4x</span><span class="val" id="s4">--</span></div>
+                        <div class="sens-row"><span>Súng ngắm</span><span class="val" id="s5">--</span></div>
+                        <div class="sens-row"><span>Camera</span><span class="val" id="s6">--</span></div>
+                        <button class="fire-btn" id="fire-btn" onclick="shoot()">BẮN: 27</button>
+                    </div>
+                    <div class="console-wrapper">
+                        <div class="console-logs" id="console">
+                            <div class="log-line" style="color: var(--muted);">> Hệ thống đang chờ lệnh...</div>
+                        </div>
+                        <div class="terminal-input-box">
+                            <div class="terminal-prefix">root@extraly:~#</div>
+                            <input type="text" class="terminal-input" id="terminal-cmd" placeholder="Gõ 'help' để xem lệnh..." onkeydown="handleTerminal(event)">
+                        </div>
+                    </div>
+                </div>
+                <div class="status-hud">
+                    <span>FPS: <span class="hud-val" id="hud-fps">60</span></span>
+                    <span>PING: <span class="hud-val" id="hud-ping">18ms</span></span>
+                    <span>RAM: <span class="hud-val" id="hud-ram">42%</span></span>
+                    <span>CPU: <span class="hud-val" id="hud-cpu">42°C</span></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="modal-deny">
+            <div class="modal-title">TRUY CẬP BỊ TỪ CHỐI</div>
+            <div class="modal-desc" id="deny-text">Tài khoản của bạn không có quyền dùng tính năng này.</div>
+            <button class="modal-btn" onclick="window.open('https://zalo.me/0399622707', '_blank')">MUA KEY NGAY</button>
+            <button class="modal-btn cancel" onclick="document.getElementById('modal-deny').classList.remove('active')">ĐÓNG</button>
+        </div>
+
+        <div class="modal-overlay" id="modal-game">
+            <div class="modal-title" style="color: var(--emerald);">KÍCH HOẠT THÀNH CÔNG</div>
+            <div class="modal-desc">Dữ liệu đã được nạp vào bộ nhớ. Khởi chạy Free Fire VN ngay?</div>
+            <button class="modal-btn" onclick="launchGame()" style="border-color: var(--emerald); color: var(--emerald);">🚀 MỞ FREE FIRE VN</button>
+            <button class="modal-btn cancel" onclick="document.getElementById('modal-game').classList.remove('active')">Ở LẠI MENU</button>
+        </div>
+
     </div>
 
     <script>
-        let crosshairOn = false;
+        // --- MATRIX EFFECT ---
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-        function toggleCrosshair() {
-            crosshairOn = !crosshairOn;
-            const overlay = document.getElementById('crosshairOverlay');
-            const anticheckSwitch = document.getElementById('anticheckSwitch');
-            if (crosshairOn) {
-                overlay.classList.add('active');
-                anticheckSwitch.classList.add('active');
-            } else {
-                overlay.classList.remove('active');
-                anticheckSwitch.classList.remove('active');
+        const letters = '0123456789ABCDEF';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+        for (let x = 0; x < columns; x++) drops[x] = 1;
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(2, 4, 6, 0.08)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00ff88';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters.charAt(Math.floor(Math.random() * letters.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 50);
+
+        // --- ÂM THANH ---
+        let audioCtx;
+        function playSound(type) {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain); gain.connect(audioCtx.destination);
+
+                if (type === 'click') {
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.08);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.08);
+                } else if (type === 'success') {
+                    osc.type = 'triangle'; osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(554, audioCtx.currentTime + 0.1);
+                    osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.2);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.35);
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.35);
+                } else if (type === 'error') {
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(250, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.25);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.25);
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.25);
+                }
+            } catch(e) { }
+        }
+        function vibrate(ms) { if(navigator.vibrate) navigator.vibrate(ms); }
+
+        // --- CẤU HÌNH & HWID ---
+        const SERVER_URL = "https://gist.githubusercontent.com/victorymeo/0923899eab643cbaa2c25a96b860701c/raw/key.txt";
+        
+        function generateHWID() {
+            const raw = [navigator.userAgent, screen.width, screen.height, screen.colorDepth, navigator.hardwareConcurrency || 4, navigator.platform].join('|');
+            let hash = 0;
+            for (let i = 0; i < raw.length; i++) { hash = ((hash << 5) - hash) + raw.charCodeAt(i); hash |= 0; }
+            return 'DEV-' + Math.abs(hash).toString(36).substring(0, 8).toUpperCase();
+        }
+
+        const deviceID = generateHWID();
+        let licenseType = "free";
+        let isACOn = false;
+        let isCHOn = false;
+        let isStreamActive = false;
+        let isFOVActive = false; 
+        let isCHLocked = false; 
+        const defaultFirePower = 27;
+        let currentCHColor = '#ff0033';
+
+        document.getElementById('dev-id-display').innerText = deviceID;
+        document.getElementById('user-id-display').innerText = deviceID;
+
+        window.onload = () => {
+            const savedKey = localStorage.getItem('saved_key');
+            if(savedKey) {
+                document.getElementById('key-input').value = savedKey;
+                document.getElementById('remember-key').checked = true;
+            }
+            setInterval(updateTelemetry, 1500);
+        };
+
+        function updateTelemetry() {
+            document.getElementById('hud-fps').innerText = Math.floor(Math.random() * 20) + 60;
+            document.getElementById('hud-ping').innerText = Math.floor(Math.random() * 20) + 10 + 'ms';
+            document.getElementById('hud-ram').innerText = Math.floor(Math.random() * 15) + 35 + '%';
+            const cpuTemp = Math.floor(Math.random() * 15) + 38; 
+            const cpuEl = document.getElementById('hud-cpu');
+            cpuEl.innerText = cpuTemp + '°C';
+            if(cpuTemp > 48) cpuEl.classList.add('temp-high');
+            else cpuEl.classList.remove('temp-high');
+        }
+
+        function generateHexLine() {
+            const chars = '0123456789ABCDEF';
+            let hex = '';
+            for(let i=0; i<8; i++) {
+                hex += chars.charAt(Math.floor(Math.random() * 16)) + chars.charAt(Math.floor(Math.random() * 16)) + ' ';
+            }
+            const addr = '0x7F' + chars.charAt(Math.floor(Math.random() * 16)) + chars.charAt(Math.floor(Math.random() * 16)) + chars.charAt(Math.floor(Math.random() * 16));
+            return `<span style="color:#5a7a8a">${addr}:</span> <span style="color:#00f3ff">${hex}</span>`;
+        }
+
+        function handleTerminal(e) {
+            if(e.key === 'Enter') {
+                const input = e.target;
+                const cmd = input.value.trim().toLowerCase();
+                input.value = '';
+                
+                if(!cmd) return;
+                playSound('click');
+                log(`root@extraly:~# ${cmd}`, 'purple');
+                
+                setTimeout(() => {
+                    const args = cmd.split(' ');
+                    const command = args[0];
+                    const param = args[1];
+
+                    switch(command) {
+                        case 'help':
+                            log("--- BẢNG LỆNH ---", "purple");
+                            log("clear : Xóa màn hình", "silver");
+                            log("status: Xem trạng thái", "silver");
+                            log("inject [v1/2/3/vip]: Kích hoạt", "silver");
+                            log("fov   : Bật/tắt vòng tròn FOV", "silver");
+                            break;
+                        case 'clear':
+                            document.getElementById('console').innerHTML = '';
+                            break;
+                        case 'status':
+                            log(`[STATUS] AC: ${isACOn ? 'ON' : 'OFF'} | CH: ${isCHOn ? 'ON' : 'OFF'}`, "emerald");
+                            break;
+                        case 'inject':
+                            if(param === 'v1') inject('V1');
+                            else if(param === 'v2') inject('V2');
+                            else if(param === 'v3') inject('V3');
+                            else if(param === 'vip') inject('SUPREME VIP');
+                            else log("[LỖI] Cú pháp: inject v1/v2/v3/vip", "red");
+                            break;
+                        case 'fov':
+                            toggleFOV();
+                            break;
+                        default:
+                            log(`Lệnh không tồn tại: ${command}`, "red");
+                    }
+                }, 300);
             }
         }
 
-        const ZALO_LINK = "https://zalo.me/0399622707";
-        const SERVER_KEY_URL = "https://gist.githubusercontent.com/victorymeo/0923899eab643cbaa2c25a96b860701c/raw/key.txt";
-
-        let myDeviceID = localStorage.getItem('my_device_id');
-        if (!myDeviceID) {
-            myDeviceID = 'DEV-' + Math.random().toString(36).substring(2, 11).toUpperCase();
-            localStorage.setItem('my_device_id', myDeviceID);
+        function toggleFOV() {
+            isFOVActive = !isFOVActive;
+            const btn = document.getElementById('ch-fov-btn');
+            const fov = document.getElementById('ch-fov');
+            
+            if(isFOVActive) {
+                btn.classList.add('active');
+                fov.classList.add('active');
+                log("[CROSSHAIR] Đã bật vòng tròn tầm bắn (FOV).", "teal");
+            } else {
+                btn.classList.remove('active');
+                fov.classList.remove('active');
+                log("[CROSSHAIR] Đã tắt vòng tròn tầm bắn.", "muted");
+            }
+            playSound('click'); vibrate(20);
         }
 
-        document.getElementById('displayDeviceIDLogin').innerText = myDeviceID;
-        document.getElementById('userDeviceID').innerText = myDeviceID;
-        document.getElementById('modalDeviceID').innerText = myDeviceID;
+        const ch = document.getElementById('floating-crosshair');
+        let dragging = false, startX, startY, initLeft, initTop;
+        const SENS_MULT = 1.5;
 
-        let userLicenseStatus = "free";
+        ch.addEventListener('mousedown', (e) => startDrag(e.clientX, e.clientY));
+        ch.addEventListener('touchstart', (e) => { e.preventDefault(); startDrag(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
+        document.addEventListener('mousemove', (e) => drag(e.clientX, e.clientY));
+        document.addEventListener('touchmove', (e) => { if(dragging) e.preventDefault(); drag(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
+        document.addEventListener('mouseup', () => dragging = false);
+        document.addEventListener('touchend', () => dragging = false);
 
-        function copyMyDeviceID() {
-            navigator.clipboard.writeText(myDeviceID);
-            alert("Đã sao chép mã máy thành công!");
+        function startDrag(x, y) {
+            if(!isCHOn || isCHLocked) return; 
+            dragging = true; startX = x; startY = y;
+            const rect = ch.getBoundingClientRect();
+            initLeft = rect.left + rect.width / 2; initTop = rect.top + rect.height / 2;
         }
 
-        function copyModalDeviceID() {
-            navigator.clipboard.writeText(myDeviceID);
-            alert("Đã sao chép nhanh ID máy!");
+        function drag(x, y) {
+            if (!dragging) return;
+            let newX = initLeft + (x - startX) * SENS_MULT;
+            let newY = initTop + (y - startY) * SENS_MULT;
+            newX = Math.max(20, Math.min(window.innerWidth - 20, newX));
+            newY = Math.max(20, Math.min(window.innerHeight - 20, newY));
+            ch.style.left = newX + 'px'; ch.style.top = newY + 'px';
+        }
+
+        function toggleCH() {
+            isCHOn = !isCHOn;
+            const box = document.getElementById('box-ch');
+            const txt = document.getElementById('txt-ch');
+            playSound('click'); vibrate(30);
+            
+            if (isCHOn) {
+                box.classList.add('active');
+                txt.style.color = currentCHColor; txt.innerText = "ĐANG BẬT";
+                ch.style.display = 'block'; ch.style.left = '50%'; ch.style.top = '50%';
+                changeCHColor(currentCHColor); 
+                document.body.classList.add('ch-active');
+                log("[CROSSHAIR] Tâm ảo đã bật.", "ruby");
+            } else {
+                box.classList.remove('active'); txt.style.color = 'var(--muted)'; txt.innerText = "ĐANG TẮT";
+                ch.style.display = 'none'; document.body.classList.remove('ch-active');
+                if(isFOVActive) toggleFOV(); 
+                log("[CROSSHAIR] Đã tắt.", "muted");
+            }
+        }
+
+        function toggleCHLock() {
+            isCHLocked = !isCHLocked;
+            const lockBtn = document.getElementById('ch-lock');
+            if(isCHLocked) {
+                lockBtn.innerText = '🔒'; lockBtn.classList.add('locked'); ch.classList.add('locked');
+                log("[CROSSHAIR] Tâm ảo đã KHÓA.", "warn");
+            } else {
+                lockBtn.innerText = '🔓'; lockBtn.classList.remove('locked'); ch.classList.remove('locked');
+                log("[CROSSHAIR] Tâm ảo đã MỞ KHÓA.", "emerald");
+            }
+            playSound('click'); vibrate(20);
+        }
+
+        function changeCHColor(color) {
+            currentCHColor = color;
+            document.querySelectorAll('.ch-dot, .ch-line-h, .ch-line-v, .ch-fov').forEach(el => {
+                el.style.background = color; 
+                el.style.boxShadow = `0 0 8px ${color}`;
+                if(el.classList.contains('ch-fov')) {
+                    el.style.background = 'transparent';
+                    el.style.borderColor = color;
+                    el.style.boxShadow = `inset 0 0 20px ${color}33`;
+                }
+            });
+            playSound('click'); vibrate(20);
+        }
+
+        function toggleStreamMode() {
+            isStreamActive = !isStreamActive;
+            const restoreBtn = document.getElementById('stream-restore-btn');
+            const container = document.querySelector('.app-container');
+            
+            if(isStreamActive) {
+                document.body.classList.add('stream-mode');
+                container.style.background = ''; container.style.border = ''; container.style.boxShadow = '';
+                restoreBtn.style.display = 'flex';
+                log("[STREAM MODE] UI đã ẩn.", "emerald");
+            } else {
+                document.body.classList.remove('stream-mode');
+                restoreBtn.style.display = 'none';
+                log("[STREAM MODE] Đã hiển thị lại UI.", "emerald");
+            }
+            playSound('click'); vibrate(50);
+        }
+
+        function toggleAC() {
+            isACOn = !isACOn;
+            const box = document.getElementById('box-ac');
+            const txt = document.getElementById('txt-ac');
+            playSound('click'); vibrate(30);
+            
+            if (isACOn) {
+                box.classList.add('active'); txt.style.color = 'var(--emerald)'; txt.innerText = "ĐANG BẬT";
+                document.body.classList.add('ac-active');
+                log("[ANTIBAN] Khởi tạo khiên bảo vệ...", "emerald");
+                const scripts = [
+                    "[ANTIBAN] Hooking kernel level API...",
+                    "[ANTICHEAT] Bypassing memory scanners...",
+                    "[+] Hide process from Task Manager: OK",
+                    "[+] Patch Garena signature: OK",
+                    "[SUCCESS] Khiên bảo vệ đã kích hoạt. AN TOÀN 100%."
+                ];
+                scripts.forEach((t, i) => setTimeout(() => log(t, i === 4 ? "success" : ""), i * 300));
+            } else {
+                box.classList.remove('active'); txt.style.color = 'var(--muted)'; txt.innerText = "ĐANG TẮT";
+                document.body.classList.remove('ac-active');
+                log("[ANTIBAN] Đã tắt khiên bảo vệ.", "red");
+            }
         }
 
         async function handleLogin() {
-            const inputPass = document.getElementById('passInput').value.trim();
-            const errorText = document.getElementById('error');
-            const loginBtn = document.getElementById('loginBtn');
+            const key = document.getElementById('key-input').value.trim();
+            const btn = document.getElementById('btn-login');
+            const err = document.getElementById('login-err');
 
-            if (!inputPass) {
-                errorText.innerText = "Vui lòng không để trống khóa truy cập!";
-                errorText.style.display = 'block';
-                return;
-            }
-
-            loginBtn.innerText = "ĐANG XÁC THỰC MÁY...";
-            loginBtn.disabled = true;
-            errorText.style.display = 'none';
+            if(!key) { err.innerText = "VUI LÒNG NHẬP KEY!"; err.style.display = 'block'; playSound('error'); return; }
+            
+            btn.innerText = "ĐANG XÁC THỰC..."; btn.disabled = true; err.style.display = 'none';
 
             try {
-                const response = await fetch(SERVER_KEY_URL + "?nocache=" + Math.random());
-                if (!response.ok) throw new Error();
-                const rawData = await response.text();
-
-                const lines = rawData.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-                let keyFound = false;
-                let isAccessGranted = false;
-
-                for (let line of lines) {
-                    const parts = line.split(':');
-                    if (parts.length < 2) continue;
-
-                    const serverKey = parts[0].trim();
-                    const status = parts[1].trim();
-
-                    if (inputPass === serverKey) {
-                        keyFound = true;
-                        if (status === 'free' || status.toUpperCase().includes(myDeviceID.toUpperCase())) {
-                            isAccessGranted = true;
-                            userLicenseStatus = status.toLowerCase();
-                            localStorage.setItem('bound_key', serverKey);
-                        } else if (localStorage.getItem('bound_key') === serverKey) {
-                            isAccessGranted = true;
-                            userLicenseStatus = status.toLowerCase();
+                const res = await fetch(SERVER_URL + "?t=" + Date.now());
+                const text = await res.text();
+                const lines = text.split('\n');
+                
+                let found = false, granted = false;
+                for(let line of lines) {
+                    const parts = line.trim().split(':');
+                    if(parts.length < 2) continue;
+                    if(parts[0] === key) {
+                        found = true;
+                        const status = parts[1].trim();
+                        if(status === 'free' || status.toUpperCase().includes(deviceID)) {
+                            granted = true; licenseType = status.toLowerCase();
                         }
                         break;
                     }
                 }
 
-                if (!keyFound) {
-                    errorText.innerText = "Mật mã bảo mật không chính xác!";
-                    errorText.style.display = 'block';
-                } else if (isAccessGranted) {
-                    document.getElementById('login-box').style.display = 'none';
-                    document.getElementById('main-app').style.display = 'block';
+                if(granted) {
+                    if(document.getElementById('remember-key').checked) localStorage.setItem('saved_key', key);
+                    else localStorage.removeItem('saved_key');
+                    playSound('success'); startLoading();
+                } else if(found) {
+                    err.innerText = "KEY ĐÃ LIÊN KẾT THIẾT BỊ KHÁC!"; err.style.display = 'block';
+                    btn.innerText = "KÍCH HOẠT NGAY"; btn.disabled = false; playSound('error');
                 } else {
-                    errorText.innerText = "Khóa truy cập đã bị liên kết sang thiết bị khác!";
-                    errorText.style.display = 'block';
+                    err.innerText = "KEY KHÔNG TỒN TẠI!"; err.style.display = 'block';
+                    btn.innerText = "KÍCH HOẠT NGAY"; btn.disabled = false; playSound('error');
                 }
-            } catch (err) {
-                errorText.innerText = "Máy chủ bận hoặc không thể kết nối mạng!";
-                errorText.style.display = 'block';
-            } finally {
-                loginBtn.innerText = "KÍCH HOẠT NGAY";
-                loginBtn.disabled = false;
+            } catch(e) {
+                err.innerText = "LỖI KẾT NỐI MÁY CHỦ!"; err.style.display = 'block';
+                btn.innerText = "KÍCH HOẠT NGAY"; btn.disabled = false; playSound('error');
             }
         }
 
-        function triggerFeature(name) {
-            const statusClean = userLicenseStatus.trim();
-            let hasPermission = false;
+        function startLoading() {
+            document.getElementById('login-screen').style.display = 'none';
+            const ov = document.getElementById('loading-overlay');
+            ov.style.display = 'flex';
+            
+            let p = 0;
+            const bar = document.getElementById('load-bar');
+            const txt = document.getElementById('load-text');
+            const pct = document.getElementById('load-percent');
+            const msgs = ["> ĐANG KẾT NỐI MÁY CHỦ...", "> XÁC MINH THIẾT BỊ...", "> GIẢI MÃ DỮ LIỆU...", "> TIÊM MODULE VÀO BỘ NHỚ...", "> THÀNH CÔNG. CHÀO MỪNG OPERATOR."];
 
-            if (name === 'V1' && (statusClean === 'free' || statusClean.endsWith('_v1'))) hasPermission = true;
-            else if (name === 'V2' && statusClean.endsWith('_v2')) hasPermission = true;
-            else if (name === 'V3' && statusClean.endsWith('_v3')) hasPermission = true;
-            else if (name === 'Extraly Premium' && statusClean.endsWith('_premium')) hasPermission = true;
+            const int = setInterval(() => {
+                p += Math.floor(Math.random() * 15) + 5;
+                if(p > 100) p = 100;
+                bar.style.width = p + '%'; pct.innerText = p + '%';
+                
+                if(p < 25) txt.innerText = msgs[0];
+                else if(p < 50) txt.innerText = msgs[1];
+                else if(p < 75) txt.innerText = msgs[2];
+                else if(p < 99) txt.innerText = msgs[3];
+                else txt.innerText = msgs[4];
 
-            if (hasPermission) {
-                runInjectLogic(name);
-            } else {
-                document.getElementById('modalFeatureName').innerText = `YÊU CẦU GÓI MUA CẤP CAO`;
-                document.getElementById('modalFeatureDesc').innerText = `ID máy của bạn chưa được phê duyệt quyền sử dụng cho dữ liệu nâng cao [${name.toUpperCase()}]. Hãy gửi lại ID cho quản trị viên.`;
-                document.getElementById('activationModal').style.display = 'flex';
-            }
+                if(p === 100) {
+                    clearInterval(int);
+                    setTimeout(() => {
+                        ov.style.display = 'none';
+                        document.getElementById('main-app').style.display = 'block';
+                        log("HỆ THỐNG: Đăng nhập thành công. Chào Operator!", "success");
+                    }, 600);
+                }
+            }, 60);
         }
 
-        function runInjectLogic(name) {
-            const consoleLog = document.getElementById('consoleLog');
-            const sensPanel = document.getElementById('sensPanel');
-            const statusElement = document.getElementById('statusText');
+        function inject(type) {
+            playSound('click'); vibrate(50);
+            let ok = false;
+            if(type === 'V1' && (licenseType === 'free' || licenseType.includes('_v1'))) ok = true;
+            else if(type === 'V2' && licenseType.includes('_v2')) ok = true;
+            else if(type === 'V3' && licenseType.includes('_v3')) ok = true;
+            else if(type === 'SUPREME VIP' && licenseType.includes('_premium')) ok = true;
 
-            statusElement.innerText = ">> Trạng thái: Đang phân tích core...";
-            statusElement.style.color = "#00e5ff";
-            consoleLog.innerHTML = "";
-            sensPanel.classList.add('visible');
-            randomizeSens();
+            if(!ok) {
+                playSound('error');
+                document.getElementById('deny-text').innerText = `Tài khoản của bạn chưa được cấp quyền sử dụng module ${type}.`;
+                document.getElementById('modal-deny').classList.add('active');
+                return;
+            }
+
+            const con = document.getElementById('console');
+            con.innerHTML = ""; document.getElementById('sens-panel').classList.add('active'); randomSens();
 
             let logs = [];
+            if(type === 'V1') logs = ["[SYS] Connecting...", "[MEM] Mapping...", "[ANTIBAN] Basic Shield...", "[+] Patch anti-debug...", "[MOD] Loading V1...", "[SUCCESS] V1 KÍCH HOẠT!"];
+            else if(type === 'V2') logs = ["[SYS] Connecting...", "[MEM] Allocating...", "[ANTIBAN] Intermediate Shield...", "[+] Bypass Memory...", "[+] Hook APIs...", "[MOD] Loading V2...", "[SUCCESS] V2 KÍCH HOẠT!"];
+            else if(type === 'V3') logs = ["[SYS] Booting Elite...", "[MEM] Bypass OS...", "[ANTIBAN] Elite Invisible Shield...", "[+] Spoof HWID...", "[ANTICHEAT] Bypass 100%...", "[MOD] Loading V3...", "[SUCCESS] V3 KÍCH HOẠT!"];
+            else logs = ["[SYS] Booting Supreme...", "[MEM] Root-level Inject...", "[ANTIBAN] Ultra Invisible...", "[+] Hide Task Manager...", "[ANTICHEAT] Suppress Logs...", "[MOD] Loading Supreme...", "[+] Full Red Headshot...", "[+] No Recoil...", "[SUCCESS] SUPREME VIP KÍCH HOẠT!"];
 
-            if (name === 'V1') {
-                logs = [
-                    `[~] Open target process connection: Free Fire...`,
-                    `[ANTIBAN]: Initializing safe stealth guard layer...`,
-                    `[ANTICHEAT]: Hooking local security scanner modules...`,
-                    `[~] Loading Regedit_DPI_SensFix patcher matrix...`,
-                    `[+] Tweaking Crosshair tracking center layout: [OK]`,
-                    `[+] Adjusting standard Headshot calibration offsets...`,
-                    `[SUCCESS]: V1 Active! Tăng nhẹ tỷ lệ Headshot.`
-                ];
-            } else if (name === 'V2' || name === 'V3') {
-                logs = [
-                    `[~] Hooking framework game partition: Free Fire MAX...`,
-                    `[ANTIBAN]: Deep-cleaning internal execution trace logs...`,
-                    `[ANTIBAN]: Secure Protection Engine Status: [SECURED]`,
-                    `[ANTICHEAT]: Initiating Garena Security Bypass algorithm...`,
-                    `[ANTICHEAT]: Bypass active client check integrity: 100%`,
-                    `[~] Loading AimAssist_Tracking module into memory space...`,
-                    `[+] Fine-Tuning Recoil: Bullet spread reduced completely`,
-                    `[+] Applying Auto-Aimlock dynamic vector to Neck/Head Bone`,
-                    `[+] Simulating Touch Event Speed: +35% (Kéo tâm cực bén)`,
-                    `[+] Calibrating Anti-Shake Crosshair stabilize script...`,
-                    `[SUCCESS]: ${name} Pro Active! Khóa tâm mượt mà, NO RECOIL.`
-                ];
-            } else if (name === 'Extraly Premium') {
-                logs = [
-                    `[~] Connecting to Extraly VIP Cloud Secure Pipeline...`,
-                    `[ANTIBAN]: Activating Ultra Invisible Anti-Ban Shield v9.9...`,
-                    `[ANTIBAN]: Account log protection & report blocking: [ENABLED]`,
-                    `[ANTICHEAT]: Suppressing client-side anomaly logs submission...`,
-                    `[+++] BYPASS STATUS: CRITICAL SUCCESS (Chống quét ẩn 2026)`,
-                    `[~] Injecting FULL_RED_HEADSHOT master code algorithm...`,
-                    `[+] Weapon Profile Loaded: Shotgun One-Tap Auto Align`,
-                    `[+] Weapon Profile Loaded: UMP Laser Beam (No Recoil / Không giật)`,
-                    `[+] Modifying Hitbox Scale: Aimlock dynamic target expanded`,
-                    `[+++] SENSITIVITY OVERRIDE: FULL ĐỎ 100% SUCCESSFUL`,
-                    `[SUCCESS]: PREMIUM INJECTED! Vào game và trải nghiệm.`
-                ];
-            }
-
-            logs.forEach((lineText, index) => {
+            logs.forEach((l, i) => {
                 setTimeout(() => {
-                    const p = document.createElement('div');
-                    p.className = "console-line";
-                    p.innerText = lineText;
-
-                    if (index === logs.length - 1) {
-                        p.style.color = "#00ffcc";
-                        p.style.fontWeight = "bold";
-                    } else if (lineText.includes('[ANTIBAN]')) {
-                        p.style.color = "#00e5ff";
-                    } else if (lineText.includes('[ANTICHEAT]')) {
-                        p.style.color = "#ff4444";
-                    } else if (lineText.includes('[+]') || lineText.includes('[+++]')) {
-                        p.style.color = "#00ccff";
-                    } else if (lineText.includes('FULL ĐỎ') || lineText.includes('NO RECOIL')) {
-                        p.style.color = "#00ffaa";
+                    let isLast = i === logs.length - 1;
+                    
+                    if(Math.random() > 0.5 && !isLast) {
+                        log(generateHexLine(), 'hex');
                     }
 
-                    consoleLog.appendChild(p);
-                    consoleLog.scrollTop = consoleLog.scrollHeight;
-
-                    if (index === logs.length - 1) {
-                        statusElement.innerText = ">> Trạng thái: Đã hoàn tất cài đặt !";
-                        statusElement.style.color = "#00ffcc";
-
-                        setTimeout(() => {
-                            document.getElementById('gameSelectTitle').innerText = `ĐÃ KÍCH HOẠT XONG ${name.toUpperCase()}`;
-                            document.getElementById('gameSelectModal').style.display = 'flex';
-                        }, 500);
+                    log(l, isLast ? "success" : (l.includes("[+]") ? "silver" : ""));
+                    if(isLast) { 
+                        playSound('success'); 
+                        document.getElementById('safety-score').innerText = "100%";
+                        document.getElementById('safety-bar').style.width = "100%";
+                        setTimeout(() => document.getElementById('modal-game').classList.add('active'), 500); 
                     }
-                }, index * 250);
+                }, i * 100);
             });
         }
 
-        function launchGame(packageName) {
-            alert(`🚀 Giả lập khởi chạy thành công gói: ${packageName}`);
-            closeGameModal();
+        function log(txt, type) {
+            const c = document.getElementById('console');
+            const d = document.createElement('div');
+            d.className = 'log-line';
+            if(type === 'success') d.classList.add('log-success');
+            else if(type === 'red') d.classList.add('log-error');
+            else if(type === 'hex') d.classList.add('log-hex');
+            else if(type === 'silver') d.style.color = 'var(--silver)';
+            else if(type === 'purple') d.style.color = 'var(--purple)';
+            else if(type === 'emerald') d.style.color = 'var(--emerald)';
+            else if(type === 'ruby') d.style.color = 'var(--ruby)';
+            else if(type === 'muted') d.style.color = 'var(--muted)';
+            else if(type === 'warn') d.style.color = 'var(--gold)';
+            else if(type === 'teal') d.style.color = '#00f3ff';
+            d.innerHTML = txt; c.appendChild(d); c.scrollTop = c.scrollHeight;
         }
 
-        function randomizeSens() {
-            const r = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-            document.getElementById('sGen').innerText = r(100, 200);  // Nhìn xung quanh
-            document.getElementById('sRed').innerText = r(0, 200);    // Ống ngắm hồng tâm
-            document.getElementById('s4x').innerText  = r(0, 200);    // Ống ngắm 2x
-            document.getElementById('sAwm').innerText = r(0, 200);    // Ống ngắm 4x
-            document.getElementById('sFree').innerText = r(0, 200);   // Súng ngắm
-            document.getElementById('sCam').innerText  = r(100, 200); // Nút camera tự do
+        function randomSens() {
+            const r = () => Math.floor(Math.random() * 21) + 180;
+            for(let i=1; i<=6; i++) document.getElementById('s'+i).innerText = r();
         }
 
-        function fireShot() {
-            const btn = document.getElementById('fireBtn');
-            const power = Math.floor(Math.random() * 21) + 18;
-            btn.innerHTML = '💥 FIRE: ' + power;
-            btn.style.background = 'linear-gradient(180deg,#ff6600,#cc3300)';
-            btn.style.boxShadow = '0 0 14px rgba(255,100,0,0.7)';
+        function shoot() {
+            playSound('click'); vibrate(20);
+            const btn = document.getElementById('fire-btn');
+            btn.innerText = `💥 BẮN: ${defaultFirePower + 1}`; btn.style.background = "var(--ruby)"; btn.style.color = "#fff";
             setTimeout(() => {
-                const newPower = Math.floor(Math.random() * 21) + 18;
-                btn.innerHTML = '🔴 BẮN: <span id="firePower">' + newPower + '</span>';
-                btn.style.background = 'linear-gradient(180deg,#ff3300,#991100)';
-                btn.style.boxShadow = '0 0 8px rgba(255,50,0,0.4)';
-                randomizeSens();
-            }, 400);
+                btn.innerText = `BẮN: ${defaultFirePower}`; btn.style.background = ""; btn.style.color = "";
+                randomSens();
+            }, 150);
         }
 
-        function closeModal() { document.getElementById('activationModal').style.display = 'none'; }
-        function closeGameModal() { document.getElementById('gameSelectModal').style.display = 'none'; }
-        function redirectToAdmin() { window.open(ZALO_LINK, '_blank'); }
-        function closeMenu() { if (confirm("Xác nhận đóng giao diện menu?")) window.close(); }
+        function launchGame() {
+            playSound('click'); document.getElementById('modal-game').classList.remove('active');
+            log("HỆ THỐNG: Chuẩn bị khởi chạy Free Fire VN...", "emerald");
+            
+            setTimeout(() => log("[LAUNCH] Đang đóng gói dữ liệu...", "silver"), 500);
+            setTimeout(() => log("[LAUNCH] Đang gửi Intent sang hệ thống...", "silver"), 1000);
+            setTimeout(() => {
+                log("[LAUNCH] HỆ THỐNG SẴN SÀNG. MỞ GAME TRONG 3...", "warn");
+            }, 1500);
+            setTimeout(() => log("[LAUNCH] 2...", "warn"), 2000);
+            setTimeout(() => log("[LAUNCH] 1...", "warn"), 2500);
+            
+            setTimeout(() => {
+                log("[SUCCESS] Đã gửi lệnh thành công!", "success");
+                try { window.location.href = "intent://launch/#Intent;scheme=freefire;package=com.dts.freefireth;end"; } catch(e){}
+                setTimeout(() => alert("🚀 Đã gửi lệnh. Nếu chạy trên Web, hãy tự mở game trên máy."), 500);
+            }, 3000);
+        }
+
+        function copyID() { playSound('click'); navigator.clipboard.writeText(deviceID); alert("Đã sao chép Hardware ID!"); }
+
+        function exitApp() {
+            playSound('error');
+            if(confirm("Bạn có chắc chắn muốn thoát ứng dụng không?")) {
+                window.close();
+                if(typeof Android !== 'undefined' && Android.closeApp) Android.closeApp();
+                if(typeof webkit !== 'undefined' && webkit.messageHandlers.closeApp) webkit.messageHandlers.closeApp.postMessage(null);
+                setTimeout(() => {
+                    document.body.innerHTML = "<div style='color:#fff; font-family:monospace; text-align:center; margin-top:20vh;'><h2>ĐÃ THOÁT ỨNG DỤNG</h2><p>Bạn có thể tắt tab này.</p></div>";
+                }, 500);
+            }
+        }
     </script>
 </body>
 </html>
