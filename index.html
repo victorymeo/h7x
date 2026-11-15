@@ -251,6 +251,7 @@
         .log-warn { color: var(--gold); }
         .log-hex { color: #00f3ff; opacity: 0.8; font-size: 9px; }
         
+        /* DÙNG DIV ĐỂ TRÁNH LỖI BÀN PHÍM CRASH WEBVIEW */
         .terminal-input-box { display: flex; border-top: 1px solid var(--border); background: rgba(0,0,0,0.5); padding: 6px 8px; align-items: center; gap: 5px;}
         .terminal-prefix { color: var(--emerald); font-weight: bold; font-size: 11px;}
         .terminal-input { 
@@ -825,27 +826,19 @@
             }, 150);
         }
 
+        // SỬA LẠI HÀM MỞ GAME ĐỂ GỬI LỆNH XUỐNG KODULAR
         function launchGame() {
             playSound('click'); document.getElementById('modal-game').classList.remove('active');
             log("HỆ THỐNG: Chuẩn bị khởi chạy Free Fire VN...", "emerald");
             
-            setTimeout(() => log("[LAUNCH] Đang đóng gói dữ liệu...", "silver"), 500);
-            setTimeout(() => log("[LAUNCH] Đang gửi Intent sang hệ thống...", "silver"), 1000);
             setTimeout(() => {
-                log("[LAUNCH] HỆ THỐNG SẴN SÀNG. MỞ GAME TRONG 3...", "warn");
-            }, 1500);
-            setTimeout(() => log("[LAUNCH] 2...", "warn"), 2000);
-            setTimeout(() => log("[LAUNCH] 1...", "warn"), 2500);
-            
-            setTimeout(() => {
-                log("[SUCCESS] Đã gửi lệnh thành công!", "success");
-                
+                log("[SUCCESS] Đang gửi lệnh mở game...", "success");
                 if (typeof window.AppInventor !== 'undefined') {
                     window.AppInventor.setWebViewString("LAUNCH_GAME");
                 } else {
                     try { window.location.href = "intent://launch/#Intent;scheme=freefire;package=com.dts.freefireth;end"; } catch(e){}
                 }
-            }, 3000);
+            }, 1500);
         }
 
         function copyID() { 
