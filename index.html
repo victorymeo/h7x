@@ -325,11 +325,12 @@
             <button class="modal-btn cancel" onclick="document.getElementById('modal-deny').classList.remove('active')">ĐÓNG</button>
         </div>
 
+        <!-- BẢNG THÔNG BÁO TỰ MỞ GAME -->
         <div class="modal-overlay" id="modal-game">
-            <div class="modal-title" style="color: var(--emerald);">KÍCH HOẠT THÀNH CÔNG</div>
-            <div class="modal-desc">Dữ liệu đã được nạp vào bộ nhớ. Khởi chạy Free Fire VN ngay?</div>
-            <button class="modal-btn" onclick="launchGame()" style="border-color: var(--emerald); color: var(--emerald);">🚀 MỞ FREE FIRE VN</button>
-            <button class="modal-btn cancel" onclick="document.getElementById('modal-game').classList.remove('active')">Ở LẠI MENU</button>
+            <div style="font-size: 50px; margin-bottom: 15px; filter: drop-shadow(0 0 15px var(--emerald));">✅</div>
+            <div class="modal-title" style="color: var(--emerald);">TỐI ƯU HÓA THÀNH CÔNG</div>
+            <div class="modal-desc">Cấu hình đã được nạp vào bộ nhớ.<br>Vui lòng <b>THOÁT TOOL</b> và <b>TỰ MỞ GAME</b> Free Fire VN để trải nghiệm!</div>
+            <button class="modal-btn" onclick="closeManualModal()" style="border-color: var(--emerald); color: var(--emerald);">TÔI ĐÃ HIỂU</button>
         </div>
 
     </div>
@@ -563,12 +564,19 @@
             else if(type === 'V2') logs = ["[SYS] Connecting...", "[MEM] Allocating...", "[ANTIBAN] Intermediate Shield...", "[+] Bypass Memory...", "[+] Hook APIs...", "[MOD] Loading V2...", "[SUCCESS] V2 KÍCH HOẠT!"];
             else if(type === 'V3') logs = ["[SYS] Booting Elite...", "[MEM] Bypass OS...", "[ANTIBAN] Elite Invisible Shield...", "[+] Spoof HWID...", "[ANTICHEAT] Bypass 100%...", "[MOD] Loading V3...", "[SUCCESS] V3 KÍCH HOẠT!"];
             else logs = ["[SYS] Booting Supreme...", "[MEM] Root-level Inject...", "[ANTIBAN] Ultra Invisible...", "[+] Hide Task Manager...", "[ANTICHEAT] Suppress Logs...", "[MOD] Loading Supreme...", "[+] Full Red Headshot...", "[+] No Recoil...", "[SUCCESS] SUPREME VIP KÍCH HOẠT!"];
+            
             logs.forEach((l, i) => {
                 setTimeout(() => {
                     let isLast = i === logs.length - 1;
                     if(Math.random() > 0.5 && !isLast) { log(generateHexLine(), 'hex'); }
                     log(l, isLast ? "success" : (l.includes("[+]") ? "silver" : ""));
-                    if(isLast) { playSound('success'); document.getElementById('safety-score').innerText = "100%"; document.getElementById('safety-bar').style.width = "100%"; setTimeout(() => document.getElementById('modal-game').classList.add('active'), 500); }
+                    if(isLast) { 
+                        playSound('success'); 
+                        document.getElementById('safety-score').innerText = "100%"; 
+                        document.getElementById('safety-bar').style.width = "100%"; 
+                        // Hiện bảng thông báo tự mở game
+                        setTimeout(() => document.getElementById('modal-game').classList.add('active'), 500); 
+                    }
                 }, i * 100);
             });
         }
@@ -602,31 +610,11 @@
             setTimeout(() => { btn.innerText = `BẮN: ${defaultFirePower}`; btn.style.background = ""; btn.style.color = ""; randomSens(); }, 150);
         }
 
-        // ==========================================
-        // HÀM MỞ GAME (ĐÃ SỬA LỖI 601 - DÙNG INTENT CHROME)
-        // ==========================================
-        function launchGame() {
-            playSound('click'); document.getElementById('modal-game').classList.remove('active');
-            log("HỆ THỐNG: Chuẩn bị khởi chạy Free Fire VN...", "emerald");
-            
-            setTimeout(() => {
-                log("[SUCCESS] Đang gửi Intent khởi chạy...", "success");
-                
-                // Link Intent chuẩn của Free Fire VN
-                var intentUrl = "intent://launch/#Intent;scheme=freefire;package=com.garena.ffvn;end";
-                
-                // Thử mở trực tiếp bằng WebView
-                try {
-                    window.location.href = intentUrl;
-                    // Dự phòng: Nếu WebView đơ, đẩy sang Chrome sau 500ms
-                    setTimeout(function() {
-                        window.open(intentUrl, "_system");
-                    }, 500);
-                } catch (e) {
-                    // Nếu lỗi, chắc chắn đẩy sang Chrome
-                    window.open(intentUrl, "_system");
-                }
-            }, 1000);
+        // HÀM ĐÓNG BẢNG THÔNG BÁO TỰ MỞ GAME
+        function closeManualModal() {
+            playSound('click');
+            document.getElementById('modal-game').classList.remove('active');
+            log("[HỆ THỐNG] Hãy tự mở game để áp dụng cấu hình.", "warn");
         }
 
         function copyID() { 
